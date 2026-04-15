@@ -1,0 +1,16 @@
+# tinyrox says don't edit this manually, but it can't stop you!
+
+export(mx_download)
+export(mx_login)
+export(mx_logout)
+export(mx_messages)
+export(mx_room_create)
+export(mx_room_join)
+export(mx_room_leave)
+export(mx_room_members)
+export(mx_rooms)
+export(mx_send)
+export(mx_session)
+export(mx_sync)
+export(mx_upload)
+export(mx_whoami)

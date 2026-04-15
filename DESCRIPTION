@@ -1,0 +1,22 @@
+Package: mx.api
+Type: Package
+Title: Minimal Matrix Client-Server API
+Version: 0.1.0
+Date: 2026-04-15
+Authors@R: c(
+    person("Troy", "Hernandez", role = c("aut", "cre"),
+           email = "troy@cornball.ai",
+           comment = c(ORCID = "0009-0005-4248-604X")),
+    person("cornball.ai", role = "cph"))
+Description: A minimal-dependency client for the 'Matrix' Client-Server
+    HTTP API <https://spec.matrix.org/>, suitable for talking to a
+    'Synapse' homeserver <https://element-hq.github.io/synapse/>. Covers
+    login, room management, message send and history, and media upload
+    or download. End-to-end encryption is out of scope; use unencrypted
+    rooms or a separate crypto package.
+License: MIT + file LICENSE
+URL: https://github.com/cornball-ai/mx.api
+BugReports: https://github.com/cornball-ai/mx.api/issues
+Imports: curl, jsonlite
+Suggests: tinytest
+Encoding: UTF-8

@@ -1,0 +1,9 @@
+^\.Rproj\.user$
+^.*\.Rproj$
+^\.claude$
+^CLAUDE\.md$
+^\.git$
+^\.github$
+^\.gitignore$
+^\.Rhistory$
+^cran-comments\.md$
