@@ -61,7 +61,7 @@ mx_room_join <- function(session, room) {
     path <- sprintf("/_matrix/client/v3/join/%s", mx_encode_id(room))
     resp <- mx_http(
                     session$server, "POST", path,
-                    body = list(), token = session$token
+                    body = mx_empty_body(), token = session$token
     )
     resp$room_id
 }
@@ -74,7 +74,10 @@ mx_room_join <- function(session, room) {
 #' @return Invisible NULL.
 #' @export
 mx_room_leave <- function(session, room_id) {
-    stop("not implemented")
+    path <- sprintf("/_matrix/client/v3/rooms/%s/leave", mx_encode_id(room_id))
+    mx_http(session$server, "POST", path, body = mx_empty_body(),
+            token = session$token)
+    invisible(NULL)
 }
 
 #' List the members of a room
@@ -82,9 +85,12 @@ mx_room_leave <- function(session, room_id) {
 #' @param session An "mx_session" object.
 #' @param room_id Character. The room ID.
 #'
-#' @return Character vector of Matrix user IDs.
+#' @return Character vector of Matrix user IDs currently joined.
 #' @export
 mx_room_members <- function(session, room_id) {
-    stop("not implemented")
+    path <- sprintf("/_matrix/client/v3/rooms/%s/joined_members",
+                    mx_encode_id(room_id))
+    resp <- mx_http(session$server, "GET", path, token = session$token)
+    names(resp$joined)
 }
 

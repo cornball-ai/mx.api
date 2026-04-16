@@ -54,3 +54,5 @@ mx_txn_id <- function() {
 
 mx_encode_id <- function(x) utils::URLencode(x, reserved = TRUE)
 
+mx_empty_body <- function() setNames(list(), character())
+

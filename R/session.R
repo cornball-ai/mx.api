@@ -68,7 +68,7 @@ mx_session <- function(server, token, user_id, device_id) {
 mx_logout <- function(session) {
     mx_http(
             session$server, "POST", "/_matrix/client/v3/logout",
-            body = list(), token = session$token
+            body = mx_empty_body(), token = session$token
     )
     invisible(NULL)
 }

@@ -11,7 +11,7 @@ mx_room_members(session, room_id)
 \item{room_id}{Character. The room ID.}
 }
 \value{
-Character vector of Matrix user IDs.
+Character vector of Matrix user IDs currently joined.
 }
 \description{
 List the members of a room
