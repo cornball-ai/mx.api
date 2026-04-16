@@ -9,6 +9,24 @@ expect_true(is.function(mx.api::mx_session))
 expect_true(is.function(mx.api::mx_logout))
 expect_true(is.function(mx.api::mx_whoami))
 
+s <- mx.api::mx_session(
+  server = "https://example/",
+  token = "tok",
+  user_id = "@u:example",
+  device_id = "DEV"
+)
+expect_inherits(s, "mx_session")
+expect_equal(s$server, "https://example")
+expect_equal(s$token, "tok")
+
 if (at_home() && nzchar(Sys.getenv("MX_TEST_SERVER"))) {
-  # live login/logout round-trip goes here
+  s <- mx.api::mx_login(
+    Sys.getenv("MX_TEST_SERVER"),
+    Sys.getenv("MX_TEST_USER"),
+    Sys.getenv("MX_TEST_PASS")
+  )
+  expect_inherits(s, "mx_session")
+  wid <- mx.api::mx_whoami(s)
+  expect_equal(wid$user_id, s$user_id)
+  mx.api::mx_logout(s)
 }

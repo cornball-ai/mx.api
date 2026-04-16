@@ -7,7 +7,11 @@
 #' @return Character vector of room IDs.
 #' @export
 mx_rooms <- function(session) {
-  stop("not implemented")
+    resp <- mx_http(
+                    session$server, "GET", "/_matrix/client/v3/joined_rooms",
+                    token = session$token
+    )
+    unlist(resp$joined_rooms, use.names = FALSE)
 }
 
 #' Create a room
@@ -22,15 +26,28 @@ mx_rooms <- function(session) {
 #'
 #' @return The new room ID as a character string.
 #' @export
-mx_room_create <- function(
-    session,
-    name = NULL,
-    topic = NULL,
-    visibility = "private",
-    preset = NULL,
-    invite = character()
-) {
-  stop("not implemented")
+mx_room_create <- function(session, name = NULL, topic = NULL,
+                           visibility = "private", preset = NULL,
+                           invite = character()) {
+    body <- list(visibility = visibility)
+    if (!is.null(name)) {
+        body$name <- name
+    }
+    if (!is.null(topic)) {
+        body$topic <- topic
+    }
+    if (!is.null(preset)) {
+        body$preset <- preset
+    }
+    if (length(invite)) {
+        body$invite <- as.list(invite)
+    }
+
+    resp <- mx_http(
+                    session$server, "POST", "/_matrix/client/v3/createRoom",
+                    body = body, token = session$token
+    )
+    resp$room_id
 }
 
 #' Join a room by ID or alias
@@ -41,7 +58,12 @@ mx_room_create <- function(
 #' @return The joined room ID.
 #' @export
 mx_room_join <- function(session, room) {
-  stop("not implemented")
+    path <- sprintf("/_matrix/client/v3/join/%s", mx_encode_id(room))
+    resp <- mx_http(
+                    session$server, "POST", path,
+                    body = list(), token = session$token
+    )
+    resp$room_id
 }
 
 #' Leave a room
@@ -52,7 +74,7 @@ mx_room_join <- function(session, room) {
 #' @return Invisible NULL.
 #' @export
 mx_room_leave <- function(session, room_id) {
-  stop("not implemented")
+    stop("not implemented")
 }
 
 #' List the members of a room
@@ -63,5 +85,6 @@ mx_room_leave <- function(session, room_id) {
 #' @return Character vector of Matrix user IDs.
 #' @export
 mx_room_members <- function(session, room_id) {
-  stop("not implemented")
+    stop("not implemented")
 }
+

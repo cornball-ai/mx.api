@@ -11,14 +11,21 @@
 #'
 #' @return The event ID of the sent message.
 #' @export
-mx_send <- function(
-    session,
-    room_id,
-    body,
-    msgtype = "m.text",
-    extra = NULL
-) {
-  stop("not implemented")
+mx_send <- function(session, room_id, body, msgtype = "m.text", extra = NULL) {
+    content <- list(msgtype = msgtype, body = body)
+    if (length(extra)) {
+        content <- utils::modifyList(content, extra)
+    }
+
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/send/m.room.message/%s",
+                    mx_encode_id(room_id), mx_encode_id(mx_txn_id())
+    )
+    resp <- mx_http(
+                    session$server, "PUT", path,
+                    body = content, token = session$token
+    )
+    resp$event_id
 }
 
 #' Fetch historical messages from a room
@@ -34,14 +41,17 @@ mx_send <- function(
 #'
 #' @return A list with fields chunk, start, end.
 #' @export
-mx_messages <- function(
-    session,
-    room_id,
-    from = NULL,
-    dir = "b",
-    limit = 50L
-) {
-  stop("not implemented")
+mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
+    query <- list(dir = dir, limit = as.integer(limit))
+    if (!is.null(from)) {
+        query$from <- from
+    }
+
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/messages",
+                    mx_encode_id(room_id)
+    )
+    mx_http(session$server, "GET", path, query = query, token = session$token)
 }
 
 #' One-shot sync against the homeserver
@@ -58,11 +68,18 @@ mx_messages <- function(
 #'
 #' @return The parsed sync response, including next_batch.
 #' @export
-mx_sync <- function(
-    session,
-    since = NULL,
-    timeout = 0L,
-    filter = NULL
-) {
-  stop("not implemented")
+mx_sync <- function(session, since = NULL, timeout = 0L, filter = NULL) {
+    query <- list(timeout = as.integer(timeout))
+    if (!is.null(since)) {
+        query$since <- since
+    }
+    if (!is.null(filter)) {
+        query$filter <- filter
+    }
+
+    mx_http(
+            session$server, "GET", "/_matrix/client/v3/sync",
+            query = query, token = session$token
+    )
 }
+

@@ -10,13 +10,8 @@
 #'
 #' @return An "mxc://" URI as a character string.
 #' @export
-mx_upload <- function(
-    session,
-    path,
-    content_type = NULL,
-    filename = NULL
-) {
-  stop("not implemented")
+mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
+    stop("not implemented")
 }
 
 #' Download a media file by mxc URI
@@ -28,5 +23,6 @@ mx_upload <- function(
 #' @return The destination path, invisibly.
 #' @export
 mx_download <- function(session, mxc_url, dest) {
-  stop("not implemented")
+    stop("not implemented")
 }
+

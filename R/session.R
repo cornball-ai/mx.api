@@ -13,7 +13,27 @@
 #' @return An object of class "mx_session".
 #' @export
 mx_login <- function(server, user, password, device_id = NULL) {
-  stop("not implemented")
+    identifier <- if (grepl("^@", user)) {
+        list(type = "m.id.user", user = sub("^@", "", sub(":.*$", "", user)))
+    } else {
+        list(type = "m.id.user", user = user)
+    }
+    body <- list(
+                 type = "m.login.password",
+                 identifier = identifier,
+                 password = password
+    )
+    if (!is.null(device_id)) {
+        body$device_id <- device_id
+    }
+
+    resp <- mx_http(server, "POST", "/_matrix/client/v3/login", body = body)
+    mx_session(
+               server = server,
+               token = resp$access_token,
+               user_id = resp$user_id,
+               device_id = resp$device_id
+    )
 }
 
 #' Reconstruct a session from saved credentials
@@ -26,7 +46,15 @@ mx_login <- function(server, user, password, device_id = NULL) {
 #' @return An object of class "mx_session".
 #' @export
 mx_session <- function(server, token, user_id, device_id) {
-  stop("not implemented")
+    structure(
+              list(
+                   server = sub("/$", "", server),
+                   token = token,
+                   user_id = user_id,
+                   device_id = device_id
+        ),
+              class = "mx_session"
+    )
 }
 
 #' Log out of a Matrix session
@@ -38,7 +66,11 @@ mx_session <- function(server, token, user_id, device_id) {
 #' @return Invisible NULL.
 #' @export
 mx_logout <- function(session) {
-  stop("not implemented")
+    mx_http(
+            session$server, "POST", "/_matrix/client/v3/logout",
+            body = list(), token = session$token
+    )
+    invisible(NULL)
 }
 
 #' Return the identity of the current session
@@ -48,5 +80,10 @@ mx_logout <- function(session) {
 #' @return A list with user_id and device_id.
 #' @export
 mx_whoami <- function(session) {
-  stop("not implemented")
+    resp <- mx_http(
+                    session$server, "GET", "/_matrix/client/v3/account/whoami",
+                    token = session$token
+    )
+    list(user_id = resp$user_id, device_id = resp$device_id)
 }
+
