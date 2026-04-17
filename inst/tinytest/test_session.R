@@ -8,6 +8,7 @@ expect_true(is.function(mx.api::mx_login))
 expect_true(is.function(mx.api::mx_session))
 expect_true(is.function(mx.api::mx_logout))
 expect_true(is.function(mx.api::mx_whoami))
+expect_true(is.function(mx.api::mx_register))
 
 s <- mx.api::mx_session(
   server = "https://example/",
