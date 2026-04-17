@@ -3,6 +3,7 @@ library(tinytest)
 expect_true(is.function(mx.api::mx_send))
 expect_true(is.function(mx.api::mx_messages))
 expect_true(is.function(mx.api::mx_sync))
+expect_true(is.function(mx.api::mx_react))
 
 if (at_home() && nzchar(Sys.getenv("MX_TEST_SERVER")) &&
     nzchar(Sys.getenv("MX_TEST_ROOM"))) {
