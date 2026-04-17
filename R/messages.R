@@ -54,6 +54,36 @@ mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
     mx_http(session$server, "GET", path, query = query, token = session$token)
 }
 
+#' Send a read receipt for a room event
+#'
+#' Public receipt (\code{m.read}) advances the "seen" marker in other
+#' clients; private receipt (\code{m.read.private}) only advances the
+#' bot's own view. Defaults to public so user clients show
+#' "seen by @bot".
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param event_id Character. The event to mark as read.
+#' @param receipt_type Character. "m.read" (default) or "m.read.private".
+#'
+#' @return Invisible NULL.
+#' @export
+mx_read_receipt <- function(session, room_id, event_id,
+                            receipt_type = c("m.read", "m.read.private")) {
+    receipt_type <- match.arg(receipt_type)
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/receipt/%s/%s",
+                    mx_encode_id(room_id),
+                    mx_encode_id(receipt_type),
+                    mx_encode_id(event_id)
+    )
+    mx_http(
+            session$server, "POST", path,
+            body = mx_empty_body(), token = session$token
+    )
+    invisible(NULL)
+}
+
 #' Send a reaction (annotation) to a room event
 #'
 #' Posts an m.reaction event tying \code{key} (usually an emoji like
