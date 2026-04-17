@@ -54,6 +54,38 @@ mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
     mx_http(session$server, "GET", path, query = query, token = session$token)
 }
 
+#' Send a reaction (annotation) to a room event
+#'
+#' Posts an m.reaction event tying \code{key} (usually an emoji like
+#' "\u{1f44d}") to \code{event_id}. Matrix reactions are plain events
+#' under the hood; they relate to the target via \code{m.annotation}.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param event_id Character. The event being reacted to.
+#' @param key Character. The reaction key (usually an emoji).
+#'
+#' @return The event ID of the sent reaction.
+#' @export
+mx_react <- function(session, room_id, event_id, key) {
+    content <- list(
+                    `m.relates_to` = list(
+            rel_type = "m.annotation",
+            event_id = event_id,
+            key = key
+        )
+    )
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/send/m.reaction/%s",
+                    mx_encode_id(room_id), mx_encode_id(mx_txn_id())
+    )
+    resp <- mx_http(
+                    session$server, "PUT", path,
+                    body = content, token = session$token
+    )
+    resp$event_id
+}
+
 #' One-shot sync against the homeserver
 #'
 #' Calls /sync once and returns immediately. For streaming behaviour,
