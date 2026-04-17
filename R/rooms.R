@@ -94,3 +94,53 @@ mx_room_members <- function(session, room_id) {
     names(resp$joined)
 }
 
+#' Get a room's human-readable name
+#'
+#' Reads the \code{m.room.name} state event. Returns NULL if the room
+#' has no name set or the state event is inaccessible.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#'
+#' @return Character scalar or NULL.
+#' @export
+mx_room_name <- function(session, room_id) {
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/state/m.room.name",
+                    mx_encode_id(room_id)
+    )
+    resp <- tryCatch(
+                     mx_http(session$server, "GET", path, token = session$token),
+                     error = function(e) NULL
+    )
+    if (is.null(resp) || is.null(resp$name) || !nzchar(resp$name)) {
+        return(NULL)
+    }
+    resp$name
+}
+
+#' Get a room's topic
+#'
+#' Reads the \code{m.room.topic} state event. Returns NULL if the room
+#' has no topic set or the state event is inaccessible.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#'
+#' @return Character scalar or NULL.
+#' @export
+mx_room_topic <- function(session, room_id) {
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/state/m.room.topic",
+                    mx_encode_id(room_id)
+    )
+    resp <- tryCatch(
+                     mx_http(session$server, "GET", path, token = session$token),
+                     error = function(e) NULL
+    )
+    if (is.null(resp) || is.null(resp$topic) || !nzchar(resp$topic)) {
+        return(NULL)
+    }
+    resp$topic
+}
+
