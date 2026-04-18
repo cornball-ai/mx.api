@@ -24,3 +24,8 @@ clients; private receipt (\code{m.read.private}) only advances the
 bot's own view. Defaults to public so user clients show
 "seen by @bot".
 }
+\examples{
+\dontrun{
+mx_read_receipt(s, "!abc:matrix.example", "$eventid")
+}
+}

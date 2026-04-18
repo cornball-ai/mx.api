@@ -17,3 +17,8 @@ Character scalar or NULL.
 Reads the \code{m.room.topic} state event. Returns NULL if the room
 has no topic set or the state event is inaccessible.
 }
+\examples{
+\dontrun{
+mx_room_topic(s, "!abc:matrix.example")
+}
+}

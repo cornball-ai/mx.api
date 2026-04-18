@@ -18,7 +18,12 @@ mx_react(session, room_id, event_id, key)
 The event ID of the sent reaction.
 }
 \description{
-Posts an m.reaction event tying \code{key} (usually an emoji like
-"\u{1f44d}") to \code{event_id}. Matrix reactions are plain events
+Posts an m.reaction event tying \code{key} (usually a thumbs-up or
+other emoji) to \code{event_id}. Matrix reactions are plain events
 under the hood; they relate to the target via \code{m.annotation}.
+}
+\examples{
+\dontrun{
+mx_react(s, "!abc:matrix.example", "$eventid", "thumbs-up")
+}
 }

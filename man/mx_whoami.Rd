@@ -14,3 +14,8 @@ A list with user_id and device_id.
 \description{
 Return the identity of the current session
 }
+\examples{
+\dontrun{
+mx_whoami(s)
+}
+}

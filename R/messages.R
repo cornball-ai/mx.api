@@ -10,6 +10,10 @@
 #'   (e.g. formatted body, reply relation).
 #'
 #' @return The event ID of the sent message.
+#' @examples
+#' \dontrun{
+#' mx_send(s, "!abc:matrix.example", "hello world")
+#' }
 #' @export
 mx_send <- function(session, room_id, body, msgtype = "m.text", extra = NULL) {
     content <- list(msgtype = msgtype, body = body)
@@ -40,6 +44,10 @@ mx_send <- function(session, room_id, body, msgtype = "m.text", extra = NULL) {
 #' @param limit Integer. Maximum events to return.
 #'
 #' @return A list with fields chunk, start, end.
+#' @examples
+#' \dontrun{
+#' mx_messages(s, "!abc:matrix.example", limit = 20L)
+#' }
 #' @export
 mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
     query <- list(dir = dir, limit = as.integer(limit))
@@ -67,6 +75,10 @@ mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
 #' @param receipt_type Character. "m.read" (default) or "m.read.private".
 #'
 #' @return Invisible NULL.
+#' @examples
+#' \dontrun{
+#' mx_read_receipt(s, "!abc:matrix.example", "$eventid")
+#' }
 #' @export
 mx_read_receipt <- function(session, room_id, event_id,
                             receipt_type = c("m.read", "m.read.private")) {
@@ -86,8 +98,8 @@ mx_read_receipt <- function(session, room_id, event_id,
 
 #' Send a reaction (annotation) to a room event
 #'
-#' Posts an m.reaction event tying \code{key} (usually an emoji like
-#' "\u{1f44d}") to \code{event_id}. Matrix reactions are plain events
+#' Posts an m.reaction event tying \code{key} (usually a thumbs-up or
+#' other emoji) to \code{event_id}. Matrix reactions are plain events
 #' under the hood; they relate to the target via \code{m.annotation}.
 #'
 #' @param session An "mx_session" object.
@@ -96,6 +108,10 @@ mx_read_receipt <- function(session, room_id, event_id,
 #' @param key Character. The reaction key (usually an emoji).
 #'
 #' @return The event ID of the sent reaction.
+#' @examples
+#' \dontrun{
+#' mx_react(s, "!abc:matrix.example", "$eventid", "thumbs-up")
+#' }
 #' @export
 mx_react <- function(session, room_id, event_id, key) {
     content <- list(
@@ -129,6 +145,11 @@ mx_react <- function(session, room_id, event_id, key) {
 #' @param filter Character or NULL. Filter ID or inline JSON filter.
 #'
 #' @return The parsed sync response, including next_batch.
+#' @examples
+#' \dontrun{
+#' batch <- mx_sync(s)
+#' next_batch <- batch$next_batch
+#' }
 #' @export
 mx_sync <- function(session, since = NULL, timeout = 0L, filter = NULL) {
     query <- list(timeout = as.integer(timeout))

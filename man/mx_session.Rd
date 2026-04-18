@@ -20,3 +20,11 @@ An object of class "mx_session".
 \description{
 Reconstruct a session from saved credentials
 }
+\examples{
+s <- mx_session(
+    server = "https://matrix.example",
+    token = "syt_...",
+    user_id = "@alice:matrix.example",
+    device_id = "ABC123"
+)
+}

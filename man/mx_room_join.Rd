@@ -16,3 +16,8 @@ The joined room ID.
 \description{
 Join a room by ID or alias
 }
+\examples{
+\dontrun{
+mx_room_join(s, "#general:matrix.example")
+}
+}

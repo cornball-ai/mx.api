@@ -14,3 +14,8 @@ Invisible NULL.
 \description{
 Invalidates the access token on the homeserver.
 }
+\examples{
+\dontrun{
+mx_logout(s)
+}
+}

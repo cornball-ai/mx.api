@@ -9,6 +9,10 @@
 #' @param filename Character or NULL. Filename advertised to the server.
 #'
 #' @return An "mxc://" URI as a character string.
+#' @examples
+#' \dontrun{
+#' uri <- mx_upload(s, "photo.png")
+#' }
 #' @export
 mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
     if (!file.exists(path)) {
@@ -57,6 +61,10 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
 #' @param dest Character. Destination file path.
 #'
 #' @return The destination path, invisibly.
+#' @examples
+#' \dontrun{
+#' mx_download(s, "mxc://matrix.example/abc123", tempfile())
+#' }
 #' @export
 mx_download <- function(session, mxc_url, dest) {
     m <- regmatches(mxc_url, regexec("^mxc://([^/]+)/(.+)$", mxc_url))[[1]]

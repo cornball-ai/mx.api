@@ -23,3 +23,8 @@ The event ID of the sent message.
 \description{
 Send a message to a room
 }
+\examples{
+\dontrun{
+mx_send(s, "!abc:matrix.example", "hello world")
+}
+}
