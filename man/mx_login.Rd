@@ -21,3 +21,8 @@ An object of class "mx_session".
 Authenticates with a Matrix homeserver using password login and returns
 a session object carrying the access token and device id.
 }
+\examples{
+\dontrun{
+s <- mx_login("https://matrix.example", "alice", "hunter2")
+}
+}

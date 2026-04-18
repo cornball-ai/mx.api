@@ -16,3 +16,8 @@ Character vector of Matrix user IDs currently joined.
 \description{
 List the members of a room
 }
+\examples{
+\dontrun{
+mx_room_members(s, "!abc:matrix.example")
+}
+}

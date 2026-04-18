@@ -14,3 +14,8 @@ Character vector of room IDs.
 \description{
 List rooms the user has joined
 }
+\examples{
+\dontrun{
+mx_rooms(s)
+}
+}

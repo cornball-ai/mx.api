@@ -18,3 +18,8 @@ The destination path, invisibly.
 \description{
 Download a media file by mxc URI
 }
+\examples{
+\dontrun{
+mx_download(s, "mxc://matrix.example/abc123", tempfile())
+}
+}

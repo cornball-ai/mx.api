@@ -17,3 +17,8 @@ Character scalar or NULL.
 Reads the \code{m.room.name} state event. Returns NULL if the room
 has no name set or the state event is inaccessible.
 }
+\examples{
+\dontrun{
+mx_room_name(s, "!abc:matrix.example")
+}
+}

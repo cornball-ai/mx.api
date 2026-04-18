@@ -16,3 +16,8 @@ Invisible NULL.
 \description{
 Leave a room
 }
+\examples{
+\dontrun{
+mx_room_leave(s, "!abc:matrix.example")
+}
+}

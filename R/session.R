@@ -21,6 +21,10 @@
 #'
 #' @return An \code{mx_session} object on login, or a list with
 #'   \code{user_id} when \code{inhibit_login = TRUE}.
+#' @examples
+#' \dontrun{
+#' s <- mx_register("https://matrix.example", "alice", "hunter2")
+#' }
 #' @export
 mx_register <- function(server, username, password, device_id = NULL,
                         initial_device_display_name = NULL,
@@ -62,6 +66,10 @@ mx_register <- function(server, username, password, device_id = NULL,
 #' @param device_id Character or NULL. Reuse an existing device id.
 #'
 #' @return An object of class "mx_session".
+#' @examples
+#' \dontrun{
+#' s <- mx_login("https://matrix.example", "alice", "hunter2")
+#' }
 #' @export
 mx_login <- function(server, user, password, device_id = NULL) {
     identifier <- if (grepl("^@", user)) {
@@ -95,6 +103,13 @@ mx_login <- function(server, user, password, device_id = NULL) {
 #' @param device_id Character. Device id from the prior login.
 #'
 #' @return An object of class "mx_session".
+#' @examples
+#' s <- mx_session(
+#'     server = "https://matrix.example",
+#'     token = "syt_...",
+#'     user_id = "@alice:matrix.example",
+#'     device_id = "ABC123"
+#' )
 #' @export
 mx_session <- function(server, token, user_id, device_id) {
     structure(
@@ -115,6 +130,10 @@ mx_session <- function(server, token, user_id, device_id) {
 #' @param session An "mx_session" object.
 #'
 #' @return Invisible NULL.
+#' @examples
+#' \dontrun{
+#' mx_logout(s)
+#' }
 #' @export
 mx_logout <- function(session) {
     mx_http(
@@ -129,6 +148,10 @@ mx_logout <- function(session) {
 #' @param session An "mx_session" object.
 #'
 #' @return A list with user_id and device_id.
+#' @examples
+#' \dontrun{
+#' mx_whoami(s)
+#' }
 #' @export
 mx_whoami <- function(session) {
     resp <- mx_http(

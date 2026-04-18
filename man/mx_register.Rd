@@ -34,3 +34,8 @@ when open registration is enabled (or a registration token is
 supplied). On success returns a ready-to-use \code{mx_session} —
 registration also logs the new user in.
 }
+\examples{
+\dontrun{
+s <- mx_register("https://matrix.example", "alice", "hunter2")
+}
+}

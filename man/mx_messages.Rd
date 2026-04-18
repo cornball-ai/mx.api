@@ -23,3 +23,8 @@ A list with fields chunk, start, end.
 \description{
 Thin wrapper over the /rooms/\{id\}/messages endpoint.
 }
+\examples{
+\dontrun{
+mx_messages(s, "!abc:matrix.example", limit = 20L)
+}
+}

@@ -26,3 +26,8 @@ The new room ID as a character string.
 \description{
 Create a room
 }
+\examples{
+\dontrun{
+room_id <- mx_room_create(s, name = "test", topic = "hello")
+}
+}

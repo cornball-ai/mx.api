@@ -23,3 +23,9 @@ Calls /sync once and returns immediately. For streaming behaviour,
 the caller writes its own loop, passing the previous batch's
 next_batch token as \code{since}.
 }
+\examples{
+\dontrun{
+batch <- mx_sync(s)
+next_batch <- batch$next_batch
+}
+}

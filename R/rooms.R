@@ -5,6 +5,10 @@
 #' @param session An "mx_session" object.
 #'
 #' @return Character vector of room IDs.
+#' @examples
+#' \dontrun{
+#' mx_rooms(s)
+#' }
 #' @export
 mx_rooms <- function(session) {
     resp <- mx_http(
@@ -25,6 +29,10 @@ mx_rooms <- function(session) {
 #' @param invite Character vector. Matrix IDs to invite.
 #'
 #' @return The new room ID as a character string.
+#' @examples
+#' \dontrun{
+#' room_id <- mx_room_create(s, name = "test", topic = "hello")
+#' }
 #' @export
 mx_room_create <- function(session, name = NULL, topic = NULL,
                            visibility = "private", preset = NULL,
@@ -56,6 +64,10 @@ mx_room_create <- function(session, name = NULL, topic = NULL,
 #' @param room Character. Room ID (!abc:server) or alias (#name:server).
 #'
 #' @return The joined room ID.
+#' @examples
+#' \dontrun{
+#' mx_room_join(s, "#general:matrix.example")
+#' }
 #' @export
 mx_room_join <- function(session, room) {
     path <- sprintf("/_matrix/client/v3/join/%s", mx_encode_id(room))
@@ -72,6 +84,10 @@ mx_room_join <- function(session, room) {
 #' @param room_id Character. The room ID.
 #'
 #' @return Invisible NULL.
+#' @examples
+#' \dontrun{
+#' mx_room_leave(s, "!abc:matrix.example")
+#' }
 #' @export
 mx_room_leave <- function(session, room_id) {
     path <- sprintf("/_matrix/client/v3/rooms/%s/leave", mx_encode_id(room_id))
@@ -86,6 +102,10 @@ mx_room_leave <- function(session, room_id) {
 #' @param room_id Character. The room ID.
 #'
 #' @return Character vector of Matrix user IDs currently joined.
+#' @examples
+#' \dontrun{
+#' mx_room_members(s, "!abc:matrix.example")
+#' }
 #' @export
 mx_room_members <- function(session, room_id) {
     path <- sprintf("/_matrix/client/v3/rooms/%s/joined_members",
@@ -103,6 +123,10 @@ mx_room_members <- function(session, room_id) {
 #' @param room_id Character. The room ID.
 #'
 #' @return Character scalar or NULL.
+#' @examples
+#' \dontrun{
+#' mx_room_name(s, "!abc:matrix.example")
+#' }
 #' @export
 mx_room_name <- function(session, room_id) {
     path <- sprintf(
@@ -128,6 +152,10 @@ mx_room_name <- function(session, room_id) {
 #' @param room_id Character. The room ID.
 #'
 #' @return Character scalar or NULL.
+#' @examples
+#' \dontrun{
+#' mx_room_topic(s, "!abc:matrix.example")
+#' }
 #' @export
 mx_room_topic <- function(session, room_id) {
     path <- sprintf(

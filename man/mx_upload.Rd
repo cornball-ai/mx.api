@@ -21,3 +21,8 @@ An "mxc://" URI as a character string.
 \description{
 Upload a file to the homeserver media repository
 }
+\examples{
+\dontrun{
+uri <- mx_upload(s, "photo.png")
+}
+}
