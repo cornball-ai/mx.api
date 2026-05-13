@@ -1,9 +1,28 @@
-# Canonical JSON per the Matrix spec.
+# Canonical JSON per the Matrix spec — intentionally hand-rolled,
+# not a wrapper around jsonlite.
 #
-# Sort object keys lexicographically by Unicode codepoint, no
-# whitespace, UTF-8 bytes for non-ASCII characters, no scientific
-# notation, no NaN / Inf / NA. Used by callers that need to sign
-# request bodies for /keys/upload and friends.
+# Matrix request signing needs byte-stable canonical JSON: every
+# implementation must produce the exact same bytes for the same input
+# because those bytes are what gets fed into ed25519. A general-purpose
+# JSON serializer's job is to produce *valid* JSON; that's a strictly
+# weaker contract. Key ordering, number formatting (no scientific
+# notation, integer-vs-double behavior), NaN / Inf / NA handling, and
+# whether non-ASCII gets emitted as \uXXXX escapes or as raw UTF-8
+# bytes are all free choices for a general serializer that the
+# canonical-JSON spec pins down.
+#
+# This file keeps every one of those rules visible and directly
+# testable in roughly 80 lines. The alternative — relying on
+# "jsonlite's defaults happen to match the spec (today)" — moves the
+# correctness of every signature into another package's release notes.
+#
+# Spec: https://spec.matrix.org/v1.10/appendices/#canonical-json
+#
+# - Object keys sorted by UTF-8 byte sequence (radix sort, locale-free)
+# - No insignificant whitespace
+# - Non-ASCII preserved as raw UTF-8 bytes (no \uXXXX escapes)
+# - Numbers: no scientific notation; NaN / Inf / NA rejected
+# - Control chars 0x01-0x1F escaped (\b \f \n \r \t as named, rest \u)
 
 #' Encode a value as Matrix canonical JSON
 #'
@@ -56,9 +75,10 @@ mx_cj_emit <- function(x) {
                           "]"
                 ))
         }
-        ord <- order(nm)
+        nm_utf8 <- enc2utf8(nm)
+        ord <- order(nm_utf8, method = "radix")
         parts <- vapply(ord, function(i) {
-            paste0(mx_cj_string(nm[[i]]), ":", mx_cj_emit(x[[i]]))
+            paste0(mx_cj_string(nm_utf8[[i]]), ":", mx_cj_emit(x[[i]]))
         }, character(1))
         return(paste0("{", paste(parts, collapse = ","), "}"))
     }
