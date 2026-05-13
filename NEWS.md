@@ -1,4 +1,4 @@
-# mx.api 0.1.0.1
+# mx.api 0.2.0
 
 * New transport endpoints for end-to-end-encryption coordination:
   `mx_keys_upload()`, `mx_keys_query()`, `mx_keys_claim()`, and
