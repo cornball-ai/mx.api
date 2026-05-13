@@ -180,6 +180,20 @@ expect_equal(
   "[{\"a\":1,\"b\":2},{\"c\":3,\"d\":4}]"
 )
 
+# I() (AsIs) forces array encoding regardless of underlying length,
+# matching jsonlite. Names on the underlying value are dropped.
+expect_equal(cj(I(1L)), "[1]")
+expect_equal(cj(I("a")), "[\"a\"]")
+expect_equal(cj(I(TRUE)), "[true]")
+expect_equal(cj(I(c(1L, 2L, 3L))), "[1,2,3]")
+expect_equal(cj(I(c("x", "y"))), "[\"x\",\"y\"]")
+expect_equal(cj(I(list(a = 1L, b = 2L))), "[1,2]")   # names dropped
+expect_equal(cj(I(list())), "[]")
+# Per-element validation still applies under I().
+expect_error(cj(I(NA)),         pattern = "NA disallowed")
+expect_error(cj(I(c(1, NaN))),  pattern = "NA/NaN/Inf disallowed")
+expect_error(cj(I(c(1, 1.5))),  pattern = "non-integer")
+
 # =========================================================================
 # Objects and key sorting
 # =========================================================================

@@ -12,7 +12,7 @@ expect_equal(
 )
 expect_equal(
   names(formals(mx.api::mx_keys_query)),
-  c("session", "device_keys", "timeout", "token")
+  c("session", "device_keys", "timeout")
 )
 expect_equal(
   names(formals(mx.api::mx_keys_claim)),

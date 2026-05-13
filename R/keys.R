@@ -45,7 +45,6 @@ mx_keys_upload <- function(session, device_keys = NULL, one_time_keys = NULL,
         body$one_time_keys <- one_time_keys
     }
     if (length(fallback_keys)) {
-        body[["org.matrix.msc2732.fallback_keys"]] <- fallback_keys
         body$fallback_keys <- fallback_keys
     }
     if (length(body) == 0L) {
@@ -68,8 +67,6 @@ mx_keys_upload <- function(session, device_keys = NULL, one_time_keys = NULL,
 #'   of device ids, or \code{character(0)} for "all devices".
 #' @param timeout Integer milliseconds. Time the server should wait
 #'   for remote homeservers before returning a partial result.
-#' @param token Character or NULL. \code{since}-style sync token from
-#'   the prior key-query, when iterating.
 #'
 #' @return Parsed response with a \code{device_keys} map of
 #'   \code{user_id -> device_id -> device_keys_object}.
@@ -79,8 +76,7 @@ mx_keys_upload <- function(session, device_keys = NULL, one_time_keys = NULL,
 #' mx_keys_query(s, list("@alice:example.org" = character()))
 #' }
 #' @export
-mx_keys_query <- function(session, device_keys, timeout = 10000L,
-                          token = NULL) {
+mx_keys_query <- function(session, device_keys, timeout = 10000L) {
     if (!is.list(device_keys) || is.null(names(device_keys))) {
         stop("mx_keys_query: 'device_keys' must be a named list", call. = FALSE)
     }
@@ -91,9 +87,6 @@ mx_keys_query <- function(session, device_keys, timeout = 10000L,
         as.list(as.character(v))
     })
     body <- list(device_keys = dk, timeout = as.integer(timeout))
-    if (!is.null(token)) {
-        body$token <- as.character(token)
-    }
     mx_http(session$server, "POST", "/_matrix/client/v3/keys/query",
             body = body, token = session$token)
 }

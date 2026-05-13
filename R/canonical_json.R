@@ -38,15 +38,17 @@
 #' byte sequence to feed into an ed25519 signer.
 #'
 #' R named lists become JSON objects; unnamed lists and length > 1
-#' atomic vectors become arrays. Length-1 atomics become scalars. Pass
-#' a length-1 element through \code{I()} (or wrap in a single-element
-#' list) to force array encoding.
+#' atomic vectors become arrays. Length-1 atomics become scalars. To
+#' force a length-1 value to encode as an array, wrap it in a
+#' single-element \code{list(...)} or in \code{I()} (AsIs values are
+#' always encoded as arrays, names dropped, mirroring jsonlite).
 #'
 #' @param x An R value: NULL, atomic vector, or list.
 #'
-#' @return A length-1 character string. Always ASCII-safe to write to
-#'   disk or hand to a signer because non-ASCII content is preserved
-#'   as UTF-8 bytes (jsonlite-style \\uXXXX escaping is not used).
+#' @return A length-1 UTF-8 character string. The result is the exact
+#'   byte sequence to write to disk or feed to an ed25519 signer;
+#'   non-ASCII content is preserved as raw UTF-8 bytes
+#'   (jsonlite-style \\uXXXX escaping is not used).
 #'
 #' @examples
 #' mx_canonical_json(list(b = 2, a = 1))
@@ -65,7 +67,15 @@ mx_cj_emit <- function(x) {
         return("null")
     }
     if (inherits(x, "AsIs")) {
+        # I() forces array encoding regardless of length, matching the
+        # jsonlite convention. Coerce to an unnamed list and recurse.
         x <- unclass(x)
+        if (is.atomic(x)) {
+            x <- as.list(x)
+        } else if (is.list(x)) {
+            x <- unname(x)
+        }
+        return(mx_cj_emit(x))
     }
     if (is.list(x)) {
         nm <- names(x)

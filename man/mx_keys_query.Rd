@@ -3,7 +3,7 @@
 \alias{mx_keys_query}
 \title{Query device keys for one or more users}
 \usage{
-mx_keys_query(session, device_keys, timeout = 10000L, token = NULL)
+mx_keys_query(session, device_keys, timeout = 10000L)
 }
 \arguments{
 \item{session}{An \code{mx_session}.}
@@ -14,9 +14,6 @@ of device ids, or \code{character(0)} for "all devices".}
 
 \item{timeout}{Integer milliseconds. Time the server should wait
 for remote homeservers before returning a partial result.}
-
-\item{token}{Character or NULL. \code{since}-style sync token from
-the prior key-query, when iterating.}
 }
 \value{
 Parsed response with a \code{device_keys} map of
