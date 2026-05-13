@@ -15,8 +15,8 @@ Description: A minimal-dependency client for the 'Matrix' Client-Server
     message send and history, media upload or download, and the
     transport endpoints needed to coordinate end-to-end encryption
     (device-key and one-time-key publication, key query and claim,
-    to-device events). Cryptographic operations themselves are out of
-    scope; pair with a separate crypto package.
+    to-device events). Encryption itself is out of scope;
+    pair with a separate crypto package.
 License: MIT + file LICENSE
 URL: https://github.com/cornball-ai/mx.api
 BugReports: https://github.com/cornball-ai/mx.api/issues
