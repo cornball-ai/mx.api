@@ -13,7 +13,10 @@ expect_equal(cj(""), "\"\"")
 expect_equal(cj("hi"), "\"hi\"")
 
 # =========================================================================
-# Numbers — integer-vs-double behavior is the easy-to-silently-corrupt one
+# Numbers — Matrix canonical JSON allows only integers in
+# [-(2^53)+1, (2^53)-1]. Float values are explicitly forbidden by the
+# spec, so the encoder must REJECT any non-integer numeric input rather
+# than serialise it as a decimal.
 # =========================================================================
 
 # integer L
@@ -21,26 +24,36 @@ expect_equal(cj(0L), "0")
 expect_equal(cj(42L), "42")
 expect_equal(cj(-7L), "-7")
 
-# numeric (double) that happens to be integer-valued — must NOT print "1.0"
+# numeric (double) that happens to be integer-valued must serialise
+# without a decimal place — "1" not "1.0"
 expect_equal(cj(0), "0")
 expect_equal(cj(1), "1")
 expect_equal(cj(1.0), "1")
 expect_equal(cj(-1), "-1")
-expect_equal(cj(-0), "0")        # negative zero collapses
+expect_equal(cj(-0), "0")        # spec: "-0 MUST NOT appear" in output
 
-# fractional doubles
-expect_equal(cj(1.5), "1.5")
-expect_equal(cj(-1.5), "-1.5")
-expect_equal(cj(0.5), "0.5")
+# Non-integer doubles MUST error (spec: "Float values are not permitted
+# by this encoding"). Previously these silently produced "1.5", which
+# would have signed a non-canonical payload.
+expect_error(cj(1.5),  pattern = "non-integer")
+expect_error(cj(-1.5), pattern = "non-integer")
+expect_error(cj(0.5),  pattern = "non-integer")
+expect_error(cj(0.1),  pattern = "non-integer")
+expect_error(cj(0.1 + 0.2), pattern = "non-integer")
+expect_error(cj(c(1, 1.5)), pattern = "non-integer")  # one bad value in a vector
 
-# large integers within Matrix's [-2^53+1, 2^53-1] safe range
+# Integers within the safe range succeed; values past it must error.
 expect_equal(cj(2^53 - 1), "9007199254740991")
 expect_equal(cj(-(2^53 - 1)), "-9007199254740991")
+expect_error(cj(2^53),    pattern = "out of")
+expect_error(cj(-(2^53)), pattern = "out of")
+expect_error(cj(1e16),    pattern = "out of")  # 10^16 > 2^53-1
 
-# no scientific notation for numbers that R would otherwise abbreviate
+# Integers below 2^53 still must not use scientific notation
 expect_false(grepl("e", cj(1e10), fixed = TRUE))
 expect_false(grepl("E", cj(1e10), fixed = TRUE))
 expect_equal(cj(1e10), "10000000000")
+expect_equal(cj(1e15), "1000000000000000")
 
 # rejected number sentinels
 expect_error(cj(NA))
@@ -239,6 +252,26 @@ expect_equal(
   cj(list(a = NULL, b = 1L)),
   "{\"a\":null,\"b\":1}"
 )
+
+# NA object keys must be rejected (would silently coerce to the literal
+# string "NA" otherwise).
+l <- list(1L, 2L)
+names(l) <- c("a", NA_character_)
+expect_error(cj(l), pattern = "NA in object keys")
+
+# Duplicate object keys must be rejected (RFC 8259 leaves duplicate
+# behavior undefined; signing two values under the same key is a recipe
+# for ambiguity).
+expect_error(cj(list(a = 1L, a = 2L)), pattern = "duplicate object key")
+expect_error(
+  cj(list(a = 1L, b = 2L, a = 3L)),
+  pattern = "duplicate object key"
+)
+# Duplicate detection runs after UTF-8 normalisation, so byte-identical
+# keys with different R encodings still collide.
+dup <- list(1L, 2L)
+names(dup) <- enc2utf8(c("café", "café"))
+expect_error(cj(dup), pattern = "duplicate object key")
 
 # =========================================================================
 # Matrix /keys/upload signing payload — full realistic shape

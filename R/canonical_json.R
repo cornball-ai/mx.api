@@ -21,17 +21,21 @@
 # - Object keys sorted by UTF-8 byte sequence (radix sort, locale-free)
 # - No insignificant whitespace
 # - Non-ASCII preserved as raw UTF-8 bytes (no \uXXXX escapes)
-# - Numbers: no scientific notation; NaN / Inf / NA rejected
+# - Numbers: integers only in [-(2^53)+1, (2^53)-1]; no decimal places,
+#   no exponents; floats, NaN, Inf, NA all rejected (spec: "Float
+#   values are not permitted by this encoding")
+# - Object keys: must not be NA or duplicated
 # - Control chars 0x01-0x1F escaped (\b \f \n \r \t as named, rest \u)
 
 #' Encode a value as Matrix canonical JSON
 #'
 #' Produces the canonical JSON byte sequence the Matrix specification
-#' requires for signed objects: object keys sorted lexicographically by
-#' Unicode codepoint, no insignificant whitespace, raw UTF-8 for
-#' non-ASCII strings, integer formatting without scientific notation,
-#' and rejection of NaN / Inf / NA. The output is the exact byte
-#' sequence to feed into an ed25519 signer.
+#' requires for signed objects: object keys sorted by UTF-8 byte
+#' sequence, no insignificant whitespace, raw UTF-8 for non-ASCII
+#' strings, integers only (no floats, no exponents, no decimal places,
+#' within \code{[-(2^53)+1, (2^53)-1]}), and rejection of NaN, Inf,
+#' NA values, and NA or duplicate object keys. The output is the exact
+#' byte sequence to feed into an ed25519 signer.
 #'
 #' R named lists become JSON objects; unnamed lists and length > 1
 #' atomic vectors become arrays. Length-1 atomics become scalars. Pass
@@ -75,7 +79,17 @@ mx_cj_emit <- function(x) {
                           "]"
                 ))
         }
+        if (any(is.na(nm))) {
+            stop("mx_canonical_json: NA in object keys disallowed",
+                 call. = FALSE)
+        }
         nm_utf8 <- enc2utf8(nm)
+        if (anyDuplicated(nm_utf8)) {
+            dup <- nm_utf8[duplicated(nm_utf8)][[1L]]
+            stop(sprintf(
+                         "mx_canonical_json: duplicate object key '%s'", dup
+                ), call. = FALSE)
+        }
         ord <- order(nm_utf8, method = "radix")
         parts <- vapply(ord, function(i) {
             paste0(mx_cj_string(nm_utf8[[i]]), ":", mx_cj_emit(x[[i]]))
@@ -126,6 +140,21 @@ mx_cj_emit <- function(x) {
 }
 
 mx_cj_number <- function(x) {
+    # Matrix canonical JSON allows only integers in
+    # [-(2^53)+1, (2^53)-1] (spec: "Float values are not permitted by
+    # this encoding").
+    if (x != trunc(x)) {
+        stop(sprintf(
+                     "mx_canonical_json: non-integer number %s disallowed", x
+            ), call. = FALSE)
+    }
+    if (abs(x) > 2 ^ 53 - 1) {
+        stop(sprintf(
+                     "mx_canonical_json: integer %s out of [-2^53+1, 2^53-1]", x
+            ), call. = FALSE)
+    }
+    # R normalises negative zero to "0", which is what the spec
+    # requires ("-0 MUST NOT appear" in output).
     format(x, scientific = FALSE, trim = TRUE, drop0trailing = TRUE)
 }
 
