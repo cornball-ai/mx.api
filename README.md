@@ -38,6 +38,22 @@ str(batch$rooms$join)
 mx_logout(s)
 ```
 
+## Create a private room with invites
+
+```r
+room <- mx_room_create(
+    s,
+    name   = "project sync",
+    topic  = "weekly check-in",
+    preset = "private_chat",
+    invite = c("@bob:matrix.example", "@carol:matrix.example")
+)
+mx_send(s, room, "kickoff in 5")
+```
+
+`mx_room_create` returns the new room id as a character string.
+Presets: `"private_chat"`, `"trusted_private_chat"`, `"public_chat"`.
+
 ## What's covered
 
 | Area | Functions |
