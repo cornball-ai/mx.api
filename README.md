@@ -54,6 +54,39 @@ mx_send(s, room, "kickoff in 5")
 `mx_room_create` returns the new room id as a character string.
 Presets: `"private_chat"`, `"trusted_private_chat"`, `"public_chat"`.
 
+## Sending rich-text (code blocks, bold, etc.)
+
+`mx_send`'s `body` is plain text. Matrix clients that show rich text
+(Element, Cinny, Fractal, etc.) render the optional `formatted_body`
+field instead, fall back to `body` when it is absent. Markdown
+fences in plain `body` show as literal backticks; you have to send
+HTML in `formatted_body` to get a real code block.
+
+Pass both via the `extra` argument:
+
+```r
+plain <- "Build steps:\n\ndocker compose build\ndocker compose up -d"
+
+html <- paste0(
+    "<p>Build steps:</p>",
+    "<pre><code>docker compose build\n",
+    "docker compose up -d</code></pre>"
+)
+
+mx_send(
+    s, room, plain,
+    extra = list(
+        format = "org.matrix.custom.html",
+        formatted_body = html
+    )
+)
+```
+
+The `format` value `"org.matrix.custom.html"` is the only one the
+Matrix spec defines. Supported tags are listed in the
+[Matrix client-server spec, section 11.2.1.7](https://spec.matrix.org/v1.11/client-server-api/#mroommessage-msgtypes).
+Code blocks use `<pre><code>…</code></pre>`; inline code is `<code>…</code>`.
+
 ## What's covered
 
 | Area | Functions |
