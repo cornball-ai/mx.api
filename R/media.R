@@ -103,3 +103,73 @@ mx_guess_mime <- function(path) {
     unname(table[ext] %||% "application/octet-stream")
 }
 
+
+#' Send a media file to a room
+#'
+#' Uploads \code{path} to the media repository and posts an
+#' \code{m.room.message} referencing it. The default \code{info} carries
+#' \code{mimetype} and \code{size}; pass richer metadata (width, height,
+#' duration) yourself -- mx.api deliberately does not inspect media files.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param path Character. Path to the file to upload.
+#' @param body Character. Message body / filename shown by clients.
+#' @param msgtype Character. One of \code{"m.file"}, \code{"m.image"},
+#'   \code{"m.audio"}, \code{"m.video"}.
+#' @param content_type Character or NULL. MIME type (guessed from the
+#'   extension when NULL).
+#' @param info List. Extra fields merged into the \code{info} object.
+#' @return The event ID of the sent message.
+#' @examples
+#' \dontrun{
+#' mx_send_media(s, "!abc:example", "clip.mp4", msgtype = "m.video")
+#' }
+#' @export
+mx_send_media <- function(session, room_id, path, body = basename(path),
+                          msgtype = "m.file", content_type = NULL,
+                          info = list()) {
+    if (is.null(content_type)) {
+        content_type <- mx_guess_mime(path)
+    }
+    uri <- mx_upload(session, path, content_type = content_type,
+                     filename = basename(path))
+    base_info <- list(mimetype = content_type, size = file.size(path))
+    if (length(info)) {
+        base_info <- utils::modifyList(base_info, info)
+    }
+    mx_send(session, room_id, body, msgtype = msgtype,
+            extra = list(url = uri, info = base_info))
+}
+
+#' @rdname mx_send_media
+#' @export
+mx_send_file <- function(session, room_id, path, body = basename(path),
+                         content_type = NULL, info = list()) {
+    mx_send_media(session, room_id, path, body = body, msgtype = "m.file",
+                  content_type = content_type, info = info)
+}
+
+#' @rdname mx_send_media
+#' @export
+mx_send_image <- function(session, room_id, path, body = basename(path),
+                          content_type = NULL, info = list()) {
+    mx_send_media(session, room_id, path, body = body, msgtype = "m.image",
+                  content_type = content_type, info = info)
+}
+
+#' @rdname mx_send_media
+#' @export
+mx_send_audio <- function(session, room_id, path, body = basename(path),
+                          content_type = NULL, info = list()) {
+    mx_send_media(session, room_id, path, body = body, msgtype = "m.audio",
+                  content_type = content_type, info = info)
+}
+
+#' @rdname mx_send_media
+#' @export
+mx_send_video <- function(session, room_id, path, body = basename(path),
+                          content_type = NULL, info = list()) {
+    mx_send_media(session, room_id, path, body = body, msgtype = "m.video",
+                  content_type = content_type, info = info)
+}
