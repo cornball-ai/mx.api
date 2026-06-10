@@ -95,7 +95,7 @@ Code blocks use `<pre><code>…</code></pre>`; inline code is `<code>…</code>`
 | Rooms | `mx_rooms`, `mx_room_create`, `mx_room_join`, `mx_room_leave`, `mx_room_invite`, `mx_room_members`, `mx_room_name`, `mx_room_topic` |
 | Messages | `mx_send`, `mx_send_event`, `mx_messages`, `mx_sync`, `mx_react`, `mx_redact`, `mx_read_receipt`, `mx_typing` |
 | Room state | `mx_get_state`, `mx_set_state` |
-| Media | `mx_upload`, `mx_download`, `mx_send_media` (+ `mx_send_file` / `mx_send_image` / `mx_send_audio` / `mx_send_video`) |
+| Media | `mx_upload` (streaming), `mx_download`, `mx_send_media` (+ `mx_send_file` / `mx_send_image` / `mx_send_audio` / `mx_send_video`), `mx_guess_mime`, `mx_media_config` |
 | Profile | `mx_profile`, `mx_set_displayname`, `mx_set_avatar_url` |
 | Account data | `mx_get_account_data`, `mx_set_account_data` |
 | Devices | `mx_devices`, `mx_delete_device` |
@@ -145,6 +145,8 @@ additive:
   `mx_profile` / `mx_set_displayname` / `mx_set_avatar_url`.
 - Account data: `mx_get_account_data`, `mx_set_account_data`.
 - Devices: `mx_devices`, `mx_delete_device`.
+- Classed error conditions (`mx_error_<ERRCODE>`) for programmatic
+  handling; streamed uploads.
 
 See `NEWS.md` for the full changelog.
 

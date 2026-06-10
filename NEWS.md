@@ -6,10 +6,19 @@
   `m.room.encryption`). Together these are what an external
   end-to-end-encryption layer (such as 'mx.client') needs.
 * Media messages: `mx_send_media()` uploads a file and posts the
-  referencing `m.room.message`; `mx_send_file()`, `mx_send_image()`,
-  `mx_send_audio()`, and `mx_send_video()` fix the msgtype. Metadata
-  beyond mimetype and size is caller-supplied; mx.api does not inspect
-  media files.
+  referencing `m.room.message`, deriving m.image/m.audio/m.video from
+  the MIME type by default; `mx_send_file()`, `mx_send_image()`,
+  `mx_send_audio()`, and `mx_send_video()` fix the msgtype explicitly.
+  Metadata beyond mimetype and size is caller-supplied; mx.api does not
+  inspect media files. `mx_guess_mime()` is now exported, and
+  `mx_media_config()` reports the server's upload cap.
+* `mx_upload()` streams files from disk instead of reading them into
+  memory, and `mx_guess_mime()` falls back to octet-stream on unknown
+  extensions as documented (was NA).
+* HTTP failures signal classed conditions
+  (`mx_error_<ERRCODE>` / `mx_error`) carrying `$errcode`, `$status`,
+  and the parsed `$body`, so callers can react to specific failures
+  without parsing message strings. Message text is unchanged.
 * Bot lifecycle endpoints: `mx_room_invite()` (invite into an existing
   room), `mx_redact()` (Matrix deletion), `mx_typing()` (typing
   indicator), and profile helpers `mx_profile()`,
