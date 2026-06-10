@@ -7,8 +7,8 @@
 \alias{mx_send_video}
 \title{Send a media file to a room}
 \usage{
-mx_send_media(session, room_id, path, body = basename(path),
-              msgtype = "m.file", content_type = NULL, info = list())
+mx_send_media(session, room_id, path, body = basename(path), msgtype = NULL,
+              content_type = NULL, info = list())
 
 mx_send_file(session, room_id, path, body = basename(path),
              content_type = NULL, info = list())
@@ -31,8 +31,10 @@ mx_send_video(session, room_id, path, body = basename(path),
 
 \item{body}{Character. Message body / filename shown by clients.}
 
-\item{msgtype}{Character. One of \code{"m.file"}, \code{"m.image"},
-\code{"m.audio"}, \code{"m.video"}.}
+\item{msgtype}{Character or NULL. One of \code{"m.file"},
+\code{"m.image"}, \code{"m.audio"}, \code{"m.video"}. NULL (the
+default) derives it from the MIME type, so a .mp4 posts as m.video
+without being told.}
 
 \item{content_type}{Character or NULL. MIME type (guessed from the
 extension when NULL).}

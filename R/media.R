@@ -87,6 +87,18 @@ mx_download <- function(session, mxc_url, dest) {
     invisible(dest)
 }
 
+#' Guess a MIME type from a file extension
+#'
+#' The extension table mx.api uses for uploads, exported so callers do
+#' not maintain their own. Unknown extensions fall back to
+#' \code{"application/octet-stream"}.
+#'
+#' @param path Character. File path or name.
+#' @return Character MIME type.
+#' @examples
+#' mx_guess_mime("clip.mp4")
+#' mx_guess_mime("notes.txt")
+#' @export
 mx_guess_mime <- function(path) {
     ext <- tolower(tools::file_ext(path))
     table <- c(
@@ -115,8 +127,10 @@ mx_guess_mime <- function(path) {
 #' @param room_id Character. The room ID.
 #' @param path Character. Path to the file to upload.
 #' @param body Character. Message body / filename shown by clients.
-#' @param msgtype Character. One of \code{"m.file"}, \code{"m.image"},
-#'   \code{"m.audio"}, \code{"m.video"}.
+#' @param msgtype Character or NULL. One of \code{"m.file"},
+#'   \code{"m.image"}, \code{"m.audio"}, \code{"m.video"}. NULL (the
+#'   default) derives it from the MIME type, so a .mp4 posts as m.video
+#'   without being told.
 #' @param content_type Character or NULL. MIME type (guessed from the
 #'   extension when NULL).
 #' @param info List. Extra fields merged into the \code{info} object.
@@ -127,10 +141,13 @@ mx_guess_mime <- function(path) {
 #' }
 #' @export
 mx_send_media <- function(session, room_id, path, body = basename(path),
-                          msgtype = "m.file", content_type = NULL,
+                          msgtype = NULL, content_type = NULL,
                           info = list()) {
     if (is.null(content_type)) {
         content_type <- mx_guess_mime(path)
+    }
+    if (is.null(msgtype)) {
+        msgtype <- mx_msgtype_for_mime(content_type)
     }
     uri <- mx_upload(session, path, content_type = content_type,
                      filename = basename(path))
@@ -172,4 +189,46 @@ mx_send_video <- function(session, room_id, path, body = basename(path),
                           content_type = NULL, info = list()) {
     mx_send_media(session, room_id, path, body = body, msgtype = "m.video",
                   content_type = content_type, info = info)
+}
+
+# m.image / m.audio / m.video from the MIME family; m.file otherwise.
+mx_msgtype_for_mime <- function(content_type) {
+    if (startsWith(content_type, "image/")) {
+        return("m.image")
+    }
+    if (startsWith(content_type, "audio/")) {
+        return("m.audio")
+    }
+    if (startsWith(content_type, "video/")) {
+        return("m.video")
+    }
+    "m.file"
+}
+
+#' Query the homeserver's media configuration
+#'
+#' Asks the server for its media limits, chiefly \code{m.upload.size}
+#' (maximum upload bytes), so callers can check a file fits before
+#' uploading. Tries the v1 endpoint and falls back to the legacy
+#' location for older homeservers.
+#'
+#' @param session An "mx_session" object.
+#' @return A list; \code{$`m.upload.size`} is the upload cap in bytes
+#'   (may be absent if the server does not advertise one).
+#' @examples
+#' \dontrun{
+#' cap <- mx_media_config(s)$`m.upload.size`
+#' file.size("clip.mp4") <= cap
+#' }
+#' @export
+mx_media_config <- function(session) {
+    tryCatch(
+             mx_http(session$server, "GET",
+                     "/_matrix/client/v1/media/config",
+                     token = session$token),
+             error = function(e) {
+        mx_http(session$server, "GET", "/_matrix/media/v3/config",
+                token = session$token)
+    }
+    )
 }
