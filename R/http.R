@@ -37,12 +37,34 @@ mx_http <- function(base_url, method, path, body = NULL, query = NULL,
     }
 
     if (resp$status_code >= 400) {
-        errcode <- parsed$errcode %||% "HTTP"
-        msg <- parsed$error %||% paste("HTTP", resp$status_code)
-        stop(sprintf("Matrix error [%s]: %s", errcode, msg), call. = FALSE)
+        mx_raise(parsed$errcode %||% "HTTP",
+                 parsed$error %||% paste("HTTP", resp$status_code),
+                 status = resp$status_code, body = parsed)
     }
 
     parsed
+}
+
+# Raise a classed Matrix error. Code can catch specific failures by
+# class -- e.g. tryCatch(..., mx_error_M_NOT_FOUND = function(e) NULL)
+# or test inherits(e, "mx_error_M_UNKNOWN_TOKEN") to re-login -- instead
+# of grepl()ing the message. The message text keeps the historical
+# "Matrix error [CODE]: msg" shape, and $errcode, $status, and $body
+# carry the structured details.
+mx_raise <- function(errcode, msg, status = NULL, body = NULL) {
+    cond <- structure(
+                      class = c(paste0("mx_error_", errcode), "mx_error",
+                                "error", "condition"),
+                      list(
+                           message = sprintf("Matrix error [%s]: %s",
+                                             errcode, msg),
+                           call = NULL,
+                           errcode = errcode,
+                           status = status,
+                           body = body
+                      )
+    )
+    stop(cond)
 }
 
 `%||%` <- function(a, b) if (is.null(a)) b else a

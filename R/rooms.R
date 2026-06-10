@@ -172,3 +172,28 @@ mx_room_topic <- function(session, room_id) {
     resp$topic
 }
 
+
+#' Invite a user to a room
+#'
+#' Invitation at creation time is covered by \code{mx_room_create()};
+#' this covers the other common lifecycle case, inviting into an
+#' existing room.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param user_id Character. The Matrix ID to invite.
+#' @return Invisibly TRUE on success.
+#' @examples
+#' \dontrun{
+#' mx_room_invite(s, "!abc:example", "@friend:example.org")
+#' }
+#' @export
+mx_room_invite <- function(session, room_id, user_id) {
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/invite",
+                    mx_encode_id(room_id)
+    )
+    mx_http(session$server, "POST", path,
+            body = list(user_id = user_id), token = session$token)
+    invisible(TRUE)
+}
