@@ -3,13 +3,8 @@
 \name{mx.api-package}
 \alias{mx.api}
 \alias{mx.api-package}
-\title{mx.api: Minimal Matrix Client-Server API}
-\description{
-Base-R bindings for the Matrix Client-Server HTTP API, suitable for
-talking to a Synapse homeserver. Two dependencies: curl and jsonlite.
-End-to-end encryption is out of scope; use unencrypted rooms or a
-separate crypto package.
-}
-\author{
-\strong{Maintainer}: Troy Hernandez \email{troy@cornball.ai}
-}
+\title{\packageTitle{mx.api}}
+\description{\packageDescription{mx.api}}
+\section{Package Content}{\packageIndices{mx.api}}
+\author{\packageAuthor{mx.api}}
+\section{Maintainer}{\packageMaintainer{mx.api}}
