@@ -46,9 +46,9 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
                                  simplifyVector = FALSE)
 
     if (resp$status_code >= 400) {
-        errcode <- parsed$errcode %||% "HTTP"
-        msg <- parsed$error %||% paste("HTTP", resp$status_code)
-        stop(sprintf("Matrix error [%s]: %s", errcode, msg), call. = FALSE)
+        mx_raise(parsed$errcode %||% "HTTP",
+                 parsed$error %||% paste("HTTP", resp$status_code),
+                 status = resp$status_code, body = parsed)
     }
 
     parsed$content_uri

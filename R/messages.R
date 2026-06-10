@@ -125,12 +125,7 @@ mx_get_state <- function(session, room_id, event_type, state_key = "") {
     )
     tryCatch(
              mx_http(session$server, "GET", path, token = session$token),
-             error = function(e) {
-        if (grepl("M_NOT_FOUND", conditionMessage(e))) {
-            return(NULL)
-        }
-        stop(e)
-    }
+             mx_error_M_NOT_FOUND = function(e) NULL
     )
 }
 
