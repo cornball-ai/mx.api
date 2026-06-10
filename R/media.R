@@ -31,10 +31,21 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
                   utils::URLencode(filename, reserved = TRUE)
     )
 
-    payload <- readBin(path, "raw", n = file.info(path)$size)
+    # Stream from disk rather than reading the whole file into RAM:
+    # upload mode + a readfunction lets curl pull chunks as it sends,
+    # which keeps multi-GB videos out of memory. customrequest keeps
+    # the method POST (upload mode alone would PUT).
+    con <- file(path, "rb")
+    on.exit(close(con), add = TRUE)
 
     h <- curl::new_handle()
-    curl::handle_setopt(h, customrequest = "POST", postfields = payload)
+    curl::handle_setopt(
+                        h,
+                        upload = TRUE,
+                        customrequest = "POST",
+                        readfunction = function(n) readBin(con, "raw", n),
+                        infilesize_large = file.size(path)
+    )
     curl::handle_setheaders(
                             h,
                             Authorization = paste("Bearer", session$token),
@@ -112,7 +123,12 @@ mx_guess_mime <- function(path) {
                zip = "application/zip", gz = "application/gzip",
                tar = "application/x-tar"
     )
-    unname(table[ext] %||% "application/octet-stream")
+    hit <- unname(table[ext])
+    # A named-vector miss is NA, not NULL, so %||% alone won't catch it.
+    if (length(hit) != 1L || is.na(hit)) {
+        return("application/octet-stream")
+    }
+    hit
 }
 
 
