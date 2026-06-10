@@ -5,17 +5,9 @@
 ## Test environments
 
 * local Ubuntu 24.04, R 4.6.0
+* local Windows 10, R 4.5.1 (1 NOTE: "unable to verify current time",
+  an environmental artifact of the offline world-clock check)
 * GitHub Actions (ubuntu-latest, macos-latest) via r-ci
-* win-builder R-devel and R-release (`tinypkgr::check_win_devel()`)
-
-## Update frequency
-
-0.2.0 was published 2026-05-13, so this update arrives after about four
-weeks. The driver is a downstream package under development
-('mx.client', GitHub) whose end-to-end-encryption layer needs the
-generic event/state senders added here; batching that need together
-with the rest of the roadmap (below) into one release seemed kinder to
-CRAN than two small ones.
 
 ## What's new in 0.3.0
 
