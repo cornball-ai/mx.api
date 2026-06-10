@@ -99,6 +99,41 @@ mx_set_state <- function(session, room_id, event_type, content,
     resp$event_id
 }
 
+#' Get a room state event
+#'
+#' Read-side counterpart of \code{\link{mx_set_state}}, e.g. to check
+#' whether a room is encrypted before joining the send path.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param event_type Character. State event type, e.g.
+#'   \code{"m.room.encryption"}.
+#' @param state_key Character. State key (default empty string).
+#' @return The state event content as a list, or NULL when the state
+#'   event is not set.
+#' @examples
+#' \dontrun{
+#' enc <- mx_get_state(s, "!abc:example", "m.room.encryption")
+#' is.null(enc)   # FALSE in an encrypted room
+#' }
+#' @export
+mx_get_state <- function(session, room_id, event_type, state_key = "") {
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/state/%s/%s",
+                    mx_encode_id(room_id), mx_encode_id(event_type),
+                    mx_encode_id(state_key)
+    )
+    tryCatch(
+             mx_http(session$server, "GET", path, token = session$token),
+             error = function(e) {
+        if (grepl("M_NOT_FOUND", conditionMessage(e))) {
+            return(NULL)
+        }
+        stop(e)
+    }
+    )
+}
+
 #' Fetch historical messages from a room
 #'
 #' Thin wrapper over the /rooms/{id}/messages endpoint.
