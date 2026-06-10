@@ -32,6 +32,73 @@ mx_send <- function(session, room_id, body, msgtype = "m.text", extra = NULL) {
     resp$event_id
 }
 
+#' Send an arbitrary room event
+#'
+#' Generic counterpart to \code{\link{mx_send}} for event types other than
+#' \code{m.room.message}, such as \code{m.room.encrypted}. The content is
+#' sent verbatim.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param event_type Character. The event type, e.g.
+#'   \code{"m.room.encrypted"}.
+#' @param content List. The event content, sent as-is.
+#' @param txn_id Character or NULL. Transaction id (generated if NULL).
+#' @return The event ID of the sent event.
+#' @examples
+#' \dontrun{
+#' mx_send_event(s, "!abc:example", "m.room.encrypted", encrypted_content)
+#' }
+#' @export
+mx_send_event <- function(session, room_id, event_type, content,
+                          txn_id = NULL) {
+    if (is.null(txn_id)) {
+        txn_id <- mx_txn_id()
+    }
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/send/%s/%s",
+                    mx_encode_id(room_id), mx_encode_id(event_type),
+                    mx_encode_id(txn_id)
+    )
+    resp <- mx_http(
+                    session$server, "PUT", path,
+                    body = content, token = session$token
+    )
+    resp$event_id
+}
+
+#' Set a room state event
+#'
+#' Generic state setter, e.g. to mark a room encrypted by putting an
+#' \code{m.room.encryption} event.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param event_type Character. State event type, e.g.
+#'   \code{"m.room.encryption"}.
+#' @param content List. The state content, sent as-is.
+#' @param state_key Character. State key (default empty string).
+#' @return The event ID of the state event.
+#' @examples
+#' \dontrun{
+#' mx_set_state(s, "!abc:example", "m.room.encryption",
+#'              list(algorithm = "m.megolm.v1.aes-sha2"))
+#' }
+#' @export
+mx_set_state <- function(session, room_id, event_type, content,
+                         state_key = "") {
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/state/%s/%s",
+                    mx_encode_id(room_id), mx_encode_id(event_type),
+                    mx_encode_id(state_key)
+    )
+    resp <- mx_http(
+                    session$server, "PUT", path,
+                    body = content, token = session$token
+    )
+    resp$event_id
+}
+
 #' Fetch historical messages from a room
 #'
 #' Thin wrapper over the /rooms/{id}/messages endpoint.
