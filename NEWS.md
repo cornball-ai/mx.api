@@ -1,3 +1,24 @@
+# mx.api 0.3.0
+
+* Generic room-event and state plumbing: `mx_send_event()` sends any
+  event type (e.g. `m.room.encrypted`), `mx_set_state()` /
+  `mx_get_state()` write and read state events (e.g.
+  `m.room.encryption`). Together these are what an external
+  end-to-end-encryption layer (such as 'mx.client') needs.
+* Media messages: `mx_send_media()` uploads a file and posts the
+  referencing `m.room.message`; `mx_send_file()`, `mx_send_image()`,
+  `mx_send_audio()`, and `mx_send_video()` fix the msgtype. Metadata
+  beyond mimetype and size is caller-supplied; mx.api does not inspect
+  media files.
+* Bot lifecycle endpoints: `mx_room_invite()` (invite into an existing
+  room), `mx_redact()` (Matrix deletion), `mx_typing()` (typing
+  indicator), and profile helpers `mx_profile()`,
+  `mx_set_displayname()`, `mx_set_avatar_url()`.
+* Account data: `mx_get_account_data()` / `mx_set_account_data()`,
+  kept generic (no DM-semantics helpers).
+* Devices: `mx_devices()` lists; `mx_delete_device()` deletes, passing
+  any user-interactive auth payload through verbatim.
+
 # mx.api 0.2.0
 
 * New transport endpoints for end-to-end-encryption coordination:

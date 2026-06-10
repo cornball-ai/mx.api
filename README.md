@@ -14,7 +14,7 @@ which handles Olm + Megolm; mx.api itself does no cryptography.
 # CRAN
 install.packages("mx.api")
 
-# GitHub (development version, 0.1.0.1)
+# GitHub (development version)
 remotes::install_github("cornball-ai/mx.api")
 ```
 
@@ -92,9 +92,13 @@ Code blocks use `<pre><code>…</code></pre>`; inline code is `<code>…</code>`
 | Area | Functions |
 |---|---|
 | Session | `mx_register`, `mx_login`, `mx_logout`, `mx_whoami`, `mx_session` |
-| Rooms | `mx_rooms`, `mx_room_create`, `mx_room_join`, `mx_room_leave`, `mx_room_members`, `mx_room_name`, `mx_room_topic` |
-| Messages | `mx_send`, `mx_messages`, `mx_sync`, `mx_react`, `mx_read_receipt` |
-| Media | `mx_upload`, `mx_download` |
+| Rooms | `mx_rooms`, `mx_room_create`, `mx_room_join`, `mx_room_leave`, `mx_room_invite`, `mx_room_members`, `mx_room_name`, `mx_room_topic` |
+| Messages | `mx_send`, `mx_send_event`, `mx_messages`, `mx_sync`, `mx_react`, `mx_redact`, `mx_read_receipt`, `mx_typing` |
+| Room state | `mx_get_state`, `mx_set_state` |
+| Media | `mx_upload`, `mx_download`, `mx_send_media` (+ `mx_send_file` / `mx_send_image` / `mx_send_audio` / `mx_send_video`) |
+| Profile | `mx_profile`, `mx_set_displayname`, `mx_set_avatar_url` |
+| Account data | `mx_get_account_data`, `mx_set_account_data` |
+| Devices | `mx_devices`, `mx_delete_device` |
 | E2EE transport | `mx_keys_upload`, `mx_keys_query`, `mx_keys_claim`, `mx_send_to_device` |
 | E2EE signing helper | `mx_canonical_json` |
 
@@ -103,10 +107,11 @@ End-to-end **cryptography** is out of scope; pair with `mx.crypto`
 endpoints carry. Helpful framing:
 
 - mx.api speaks Matrix HTTP. It does no signing, no key management,
-  no key validation.
+  no key validation, and holds no state between calls.
 - mx.crypto speaks Olm + Megolm. It does no HTTP.
-- An integration script that wants encrypted rooms uses both. The
-  current reference is `mx.crypto/inst/integration/e2e_demo.R`.
+- [mx.client](https://github.com/cornball-ai/mx.client) is the stateful
+  layer that uses both: config persistence, sync cursors, and E2EE
+  orchestration (its `vignette("e2ee")` walks the whole flow).
 
 ## Canonical JSON
 
@@ -129,13 +134,17 @@ mx_canonical_json(1.5)
 
 ## Status
 
-**0.1.0.1** dev marker on `main` (2026-05-13). The 0.1.0 release is on
-CRAN. The 0.1.0.1 delta is additive:
+**0.3.0** on `main`. The 0.2.0 release is on CRAN. The 0.3.0 delta is
+additive:
 
-- New transport endpoints for E2EE coordination:
-  `mx_keys_upload`, `mx_keys_query`, `mx_keys_claim`,
-  `mx_send_to_device`.
-- New `mx_canonical_json` for signature payload encoding.
+- Generic event and state plumbing: `mx_send_event`, `mx_set_state`,
+  `mx_get_state` (needed for `m.room.encrypted` / `m.room.encryption`).
+- Media messages: `mx_send_media` and the file/image/audio/video
+  wrappers.
+- Bot lifecycle: `mx_room_invite`, `mx_redact`, `mx_typing`,
+  `mx_profile` / `mx_set_displayname` / `mx_set_avatar_url`.
+- Account data: `mx_get_account_data`, `mx_set_account_data`.
+- Devices: `mx_devices`, `mx_delete_device`.
 
 See `NEWS.md` for the full changelog.
 
