@@ -5,8 +5,8 @@
 ## Test environments
 
 * local Ubuntu 24.04, R 4.6.0
-* local Windows 10, R 4.5.1 (1 NOTE: "unable to verify current time",
-  an environmental artifact of the offline world-clock check)
+* local Windows 10: R 4.6.0 and R-devel (4.7.0 pre-release), both OK;
+  R 4.5.1 with 1 environmental NOTE ("unable to verify current time")
 * GitHub Actions (ubuntu-latest, macos-latest) via r-ci
 
 ## What's new in 0.3.0
