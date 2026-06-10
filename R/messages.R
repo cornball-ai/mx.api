@@ -268,3 +268,71 @@ mx_sync <- function(session, since = NULL, timeout = 0L, filter = NULL) {
     )
 }
 
+
+#' Redact an event
+#'
+#' Removes the content of a message, reaction, or other event. This is
+#' how Matrix deletes things.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param event_id Character. The event to redact.
+#' @param reason Character or NULL. Optional human-readable reason.
+#' @param txn_id Character or NULL. Transaction id (generated if NULL).
+#' @return The event ID of the redaction event.
+#' @examples
+#' \dontrun{
+#' mx_redact(s, "!abc:example", "$someevent", reason = "typo")
+#' }
+#' @export
+mx_redact <- function(session, room_id, event_id, reason = NULL,
+                      txn_id = NULL) {
+    if (is.null(txn_id)) {
+        txn_id <- mx_txn_id()
+    }
+    body <- if (is.null(reason)) {
+        mx_empty_body()
+    } else {
+        list(reason = reason)
+    }
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/redact/%s/%s",
+                    mx_encode_id(room_id), mx_encode_id(event_id),
+                    mx_encode_id(txn_id)
+    )
+    resp <- mx_http(session$server, "PUT", path, body = body,
+                    token = session$token)
+    resp$event_id
+}
+
+#' Send a typing notification
+#'
+#' Shows (or clears) the session user's typing indicator in a room.
+#' Useful bot polish while a slow reply is being generated.
+#'
+#' @param session An "mx_session" object.
+#' @param room_id Character. The room ID.
+#' @param typing Logical. TRUE to show typing, FALSE to clear it.
+#' @param timeout Integer. How long the indicator lasts, in
+#'   milliseconds (ignored when \code{typing = FALSE}).
+#' @return Invisibly TRUE on success.
+#' @examples
+#' \dontrun{
+#' mx_typing(s, "!abc:example", TRUE)
+#' # ... generate the reply ...
+#' mx_typing(s, "!abc:example", FALSE)
+#' }
+#' @export
+mx_typing <- function(session, room_id, typing = TRUE, timeout = 30000L) {
+    body <- list(typing = isTRUE(typing))
+    if (isTRUE(typing)) {
+        body$timeout <- as.integer(timeout)
+    }
+    path <- sprintf(
+                    "/_matrix/client/v3/rooms/%s/typing/%s",
+                    mx_encode_id(room_id), mx_encode_id(session$user_id)
+    )
+    mx_http(session$server, "PUT", path, body = body,
+            token = session$token)
+    invisible(TRUE)
+}
