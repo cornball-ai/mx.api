@@ -53,8 +53,14 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
                             Accept = "application/json"
     )
     resp <- curl::curl_fetch_memory(url, handle = h)
-    parsed <- jsonlite::fromJSON(rawToChar(resp$content),
-                                 simplifyVector = FALSE)
+    # A proxy or misconfigured server can answer non-JSON (HTML, plain
+    # text); don't let the parse error mask the real failure -- fall
+    # through to mx_raise with whatever body came back.
+    parsed <- tryCatch(
+                       jsonlite::fromJSON(rawToChar(resp$content),
+                                          simplifyVector = FALSE),
+                       error = function(e) list(raw = rawToChar(resp$content))
+    )
 
     if (resp$status_code >= 400) {
         mx_raise(parsed$errcode %||% "HTTP",

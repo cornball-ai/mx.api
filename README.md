@@ -130,12 +130,11 @@ mx_canonical_json(1.5)
 #> Error: mx_canonical_json: non-integer number 1.5 disallowed
 ```
 
-97 assertions exercise the encoder (see `inst/tinytest/test_canonical_json.R`).
+107 assertions exercise the encoder (see `inst/tinytest/test_canonical_json.R`).
 
 ## Status
 
-**0.3.0** on `main`. The 0.2.0 release is on CRAN. The 0.3.0 delta is
-additive:
+**0.3.0**. Relative to 0.2.0 the delta is additive:
 
 - Generic event and state plumbing: `mx_send_event`, `mx_set_state`,
   `mx_get_state` (needed for `m.room.encrypted` / `m.room.encryption`).
