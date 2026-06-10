@@ -1,6 +1,8 @@
 # tinyrox says don't edit this manually, but it can't stop you!
 
 export(mx_canonical_json)
+export(mx_delete_device)
+export(mx_devices)
 export(mx_download)
 export(mx_get_account_data)
 export(mx_get_state)
