@@ -29,12 +29,9 @@
 mx_register <- function(server, username, password, device_id = NULL,
                         initial_device_display_name = NULL,
                         inhibit_login = FALSE) {
-    body <- list(
-                 username = username,
-                 password = password,
+    body <- list(username = username, password = password,
                  auth = list(type = "m.login.dummy"),
-                 inhibit_login = isTRUE(inhibit_login)
-    )
+                 inhibit_login = isTRUE(inhibit_login))
     if (!is.null(device_id)) {
         body$device_id <- device_id
     }
@@ -77,11 +74,8 @@ mx_login <- function(server, user, password, device_id = NULL) {
     } else {
         list(type = "m.id.user", user = user)
     }
-    body <- list(
-                 type = "m.login.password",
-                 identifier = identifier,
-                 password = password
-    )
+    body <- list(type = "m.login.password", identifier = identifier,
+                 password = password)
     if (!is.null(device_id)) {
         body$device_id <- device_id
     }
@@ -113,14 +107,54 @@ mx_login <- function(server, user, password, device_id = NULL) {
 #' @export
 mx_session <- function(server, token, user_id, device_id) {
     structure(
-              list(
-                   server = sub("/$", "", server),
-                   token = token,
-                   user_id = user_id,
-                   device_id = device_id
-        ),
+              list(server = sub("/$", "", server), token = token,
+                   user_id = user_id, device_id = device_id),
               class = "mx_session"
     )
+}
+
+#' Print a Matrix session
+#'
+#' Prints the session with the access token masked, so that an
+#' interactive session, a screenshot, or a pasted bug report does not
+#' leak it. The token shows as \code{<hidden>} when set and
+#' \code{<unset>} when empty; every other field prints as-is. Use
+#' \code{unclass(x)} when the raw token is genuinely needed.
+#'
+#' @param x An "mx_session" object.
+#' @param ... Ignored.
+#'
+#' @return \code{x}, invisibly.
+#' @examples
+#' s <- mx_session(
+#'     server = "https://matrix.example",
+#'     token = "syt_secret_value",
+#'     user_id = "@alice:matrix.example",
+#'     device_id = "ABC123"
+#' )
+#' s
+#' @export
+print.mx_session <- function(x, ...) {
+    cat("<mx_session>\n")
+    fields <- names(x)
+    width <- max(nchar(fields)) + 1L
+    for (f in fields) {
+        value <- x[[f]]
+        set <- length(value) > 0L && any(nzchar(as.character(value)))
+        text <- if (identical(f, "token")) {
+            if (set) {
+                "<hidden>"
+            } else {
+                "<unset>"
+            }
+        } else if (set) {
+            paste(as.character(value), collapse = ", ")
+        } else {
+            "<unset>"
+        }
+        cat(sprintf("  %-*s %s\n", width, paste0(f, ":"), text))
+    }
+    invisible(x)
 }
 
 #' Log out of a Matrix session
@@ -136,10 +170,8 @@ mx_session <- function(server, token, user_id, device_id) {
 #' }
 #' @export
 mx_logout <- function(session) {
-    mx_http(
-            session$server, "POST", "/_matrix/client/v3/logout",
-            body = mx_empty_body(), token = session$token
-    )
+    mx_http(session$server, "POST", "/_matrix/client/v3/logout",
+            body = mx_empty_body(), token = session$token)
     invisible(NULL)
 }
 
@@ -154,10 +186,7 @@ mx_logout <- function(session) {
 #' }
 #' @export
 mx_whoami <- function(session) {
-    resp <- mx_http(
-                    session$server, "GET", "/_matrix/client/v3/account/whoami",
-                    token = session$token
-    )
+    resp <- mx_http(session$server, "GET",
+                    "/_matrix/client/v3/account/whoami", token = session$token)
     list(user_id = resp$user_id, device_id = resp$device_id)
 }
-

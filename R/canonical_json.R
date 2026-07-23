@@ -154,9 +154,8 @@ mx_cj_number <- function(x) {
     # [-(2^53)+1, (2^53)-1] (spec: "Float values are not permitted by
     # this encoding").
     if (x != trunc(x)) {
-        stop(sprintf(
-                     "mx_canonical_json: non-integer number %s disallowed", x
-            ), call. = FALSE)
+        stop(sprintf("mx_canonical_json: non-integer number %s disallowed", x),
+             call. = FALSE)
     }
     if (abs(x) > 2 ^ 53 - 1) {
         stop(sprintf(
@@ -187,4 +186,3 @@ mx_cj_string <- function(s) {
     }
     paste0("\"", s, "\"")
 }
-

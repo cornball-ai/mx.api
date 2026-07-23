@@ -16,10 +16,8 @@
 #' }
 #' @export
 mx_get_account_data <- function(session, type, user_id = session$user_id) {
-    path <- sprintf(
-                    "/_matrix/client/v3/user/%s/account_data/%s",
-                    mx_encode_id(user_id), mx_encode_id(type)
-    )
+    path <- sprintf("/_matrix/client/v3/user/%s/account_data/%s",
+                    mx_encode_id(user_id), mx_encode_id(type))
     tryCatch(
              mx_http(session$server, "GET", path, token = session$token),
              mx_error_M_NOT_FOUND = function(e) NULL
@@ -43,11 +41,8 @@ mx_get_account_data <- function(session, type, user_id = session$user_id) {
 #' @export
 mx_set_account_data <- function(session, type, content,
                                 user_id = session$user_id) {
-    path <- sprintf(
-                    "/_matrix/client/v3/user/%s/account_data/%s",
-                    mx_encode_id(user_id), mx_encode_id(type)
-    )
-    mx_http(session$server, "PUT", path, body = content,
-            token = session$token)
+    path <- sprintf("/_matrix/client/v3/user/%s/account_data/%s",
+                    mx_encode_id(user_id), mx_encode_id(type))
+    mx_http(session$server, "PUT", path, body = content, token = session$token)
     invisible(TRUE)
 }

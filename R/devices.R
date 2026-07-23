@@ -45,11 +45,7 @@ mx_delete_device <- function(session, device_id, auth = NULL) {
     } else {
         list(auth = auth)
     }
-    path <- sprintf(
-                    "/_matrix/client/v3/devices/%s",
-                    mx_encode_id(device_id)
-    )
-    mx_http(session$server, "DELETE", path, body = body,
-            token = session$token)
+    path <- sprintf("/_matrix/client/v3/devices/%s", mx_encode_id(device_id))
+    mx_http(session$server, "DELETE", path, body = body, token = session$token)
     invisible(TRUE)
 }

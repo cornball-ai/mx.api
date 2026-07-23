@@ -1,3 +1,10 @@
+# mx.api 0.3.0.1
+
+* `print()` method for `mx_session`: masks the access `token` as
+  `<hidden>` (or `<unset>` when empty) instead of falling through to the
+  default list print, which showed it verbatim. Every other field stays
+  visible; `unclass()` still exposes the raw token when needed.
+
 # mx.api 0.3.0
 
 * Generic room-event and state plumbing: `mx_send_event()` sends any

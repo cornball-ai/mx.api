@@ -25,11 +25,9 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
         filename <- basename(path)
     }
 
-    url <- paste0(
-                  sub("/$", "", session$server),
+    url <- paste0(sub("/$", "", session$server),
                   "/_matrix/media/v3/upload?filename=",
-                  utils::URLencode(filename, reserved = TRUE)
-    )
+                  utils::URLencode(filename, reserved = TRUE))
 
     # Stream from disk rather than reading the whole file into RAM:
     # upload mode + a readfunction lets curl pull chunks as it sends,
@@ -57,8 +55,7 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
     # text); don't let the parse error mask the real failure -- fall
     # through to mx_raise with whatever body came back.
     parsed <- tryCatch(
-                       jsonlite::fromJSON(rawToChar(resp$content),
-                                          simplifyVector = FALSE),
+                       jsonlite::fromJSON(rawToChar(resp$content), simplifyVector = FALSE),
                        error = function(e) list(raw = rawToChar(resp$content))
     )
 
@@ -91,12 +88,10 @@ mx_download <- function(session, mxc_url, dest) {
     server_name <- m[2]
     media_id <- m[3]
 
-    url <- paste0(
-                  sub("/$", "", session$server),
+    url <- paste0(sub("/$", "", session$server),
                   "/_matrix/client/v1/media/download/",
                   utils::URLencode(server_name, reserved = TRUE), "/",
-                  utils::URLencode(media_id, reserved = TRUE)
-    )
+                  utils::URLencode(media_id, reserved = TRUE))
 
     h <- curl::new_handle()
     curl::handle_setheaders(h, Authorization = paste("Bearer", session$token))
@@ -118,17 +113,15 @@ mx_download <- function(session, mxc_url, dest) {
 #' @export
 mx_guess_mime <- function(path) {
     ext <- tolower(tools::file_ext(path))
-    table <- c(
-               txt = "text/plain", md = "text/markdown", csv = "text/csv",
+    table <- c(txt = "text/plain", md = "text/markdown", csv = "text/csv",
                json = "application/json", pdf = "application/pdf",
                html = "text/html", xml = "application/xml",
                png = "image/png", jpg = "image/jpeg", jpeg = "image/jpeg",
                gif = "image/gif", webp = "image/webp", svg = "image/svg+xml",
                mp3 = "audio/mpeg", wav = "audio/wav", ogg = "audio/ogg",
-               mp4 = "video/mp4", webm = "video/webm", mov = "video/quicktime",
-               zip = "application/zip", gz = "application/gzip",
-               tar = "application/x-tar"
-    )
+               mp4 = "video/mp4", webm = "video/webm",
+               mov = "video/quicktime", zip = "application/zip",
+               gz = "application/gzip", tar = "application/x-tar")
     hit <- unname(table[ext])
     # A named-vector miss is NA, not NULL, so %||% alone won't catch it.
     if (length(hit) != 1L || is.na(hit)) {
@@ -136,7 +129,6 @@ mx_guess_mime <- function(path) {
     }
     hit
 }
-
 
 #' Send a media file to a room
 #'
@@ -163,8 +155,7 @@ mx_guess_mime <- function(path) {
 #' }
 #' @export
 mx_send_media <- function(session, room_id, path, body = basename(path),
-                          msgtype = NULL, content_type = NULL,
-                          info = list()) {
+                          msgtype = NULL, content_type = NULL, info = list()) {
     if (is.null(content_type)) {
         content_type <- mx_guess_mime(path)
     }
@@ -245,8 +236,7 @@ mx_msgtype_for_mime <- function(content_type) {
 #' @export
 mx_media_config <- function(session) {
     tryCatch(
-             mx_http(session$server, "GET",
-                     "/_matrix/client/v1/media/config",
+             mx_http(session$server, "GET", "/_matrix/client/v1/media/config",
                      token = session$token),
              error = function(e) {
         mx_http(session$server, "GET", "/_matrix/media/v3/config",

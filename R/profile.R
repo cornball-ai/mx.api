@@ -27,10 +27,8 @@ mx_profile <- function(session, user_id = session$user_id) {
 #' }
 #' @export
 mx_set_displayname <- function(session, displayname) {
-    path <- sprintf(
-                    "/_matrix/client/v3/profile/%s/displayname",
-                    mx_encode_id(session$user_id)
-    )
+    path <- sprintf("/_matrix/client/v3/profile/%s/displayname",
+                    mx_encode_id(session$user_id))
     mx_http(session$server, "PUT", path,
             body = list(displayname = displayname), token = session$token)
     invisible(TRUE)
@@ -49,10 +47,8 @@ mx_set_displayname <- function(session, displayname) {
 #' }
 #' @export
 mx_set_avatar_url <- function(session, avatar_url) {
-    path <- sprintf(
-                    "/_matrix/client/v3/profile/%s/avatar_url",
-                    mx_encode_id(session$user_id)
-    )
+    path <- sprintf("/_matrix/client/v3/profile/%s/avatar_url",
+                    mx_encode_id(session$user_id))
     mx_http(session$server, "PUT", path,
             body = list(avatar_url = avatar_url), token = session$token)
     invisible(TRUE)

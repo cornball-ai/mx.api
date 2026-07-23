@@ -11,10 +11,8 @@
 #' }
 #' @export
 mx_rooms <- function(session) {
-    resp <- mx_http(
-                    session$server, "GET", "/_matrix/client/v3/joined_rooms",
-                    token = session$token
-    )
+    resp <- mx_http(session$server, "GET", "/_matrix/client/v3/joined_rooms",
+                    token = session$token)
     unlist(resp$joined_rooms, use.names = FALSE)
 }
 
@@ -51,10 +49,8 @@ mx_room_create <- function(session, name = NULL, topic = NULL,
         body$invite <- as.list(invite)
     }
 
-    resp <- mx_http(
-                    session$server, "POST", "/_matrix/client/v3/createRoom",
-                    body = body, token = session$token
-    )
+    resp <- mx_http(session$server, "POST", "/_matrix/client/v3/createRoom",
+                    body = body, token = session$token)
     resp$room_id
 }
 
@@ -71,10 +67,8 @@ mx_room_create <- function(session, name = NULL, topic = NULL,
 #' @export
 mx_room_join <- function(session, room) {
     path <- sprintf("/_matrix/client/v3/join/%s", mx_encode_id(room))
-    resp <- mx_http(
-                    session$server, "POST", path,
-                    body = mx_empty_body(), token = session$token
-    )
+    resp <- mx_http(session$server, "POST", path, body = mx_empty_body(),
+                    token = session$token)
     resp$room_id
 }
 
@@ -129,10 +123,8 @@ mx_room_members <- function(session, room_id) {
 #' }
 #' @export
 mx_room_name <- function(session, room_id) {
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/state/m.room.name",
-                    mx_encode_id(room_id)
-    )
+    path <- sprintf("/_matrix/client/v3/rooms/%s/state/m.room.name",
+                    mx_encode_id(room_id))
     resp <- tryCatch(
                      mx_http(session$server, "GET", path, token = session$token),
                      error = function(e) NULL
@@ -158,10 +150,8 @@ mx_room_name <- function(session, room_id) {
 #' }
 #' @export
 mx_room_topic <- function(session, room_id) {
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/state/m.room.topic",
-                    mx_encode_id(room_id)
-    )
+    path <- sprintf("/_matrix/client/v3/rooms/%s/state/m.room.topic",
+                    mx_encode_id(room_id))
     resp <- tryCatch(
                      mx_http(session$server, "GET", path, token = session$token),
                      error = function(e) NULL
@@ -171,7 +161,6 @@ mx_room_topic <- function(session, room_id) {
     }
     resp$topic
 }
-
 
 #' Invite a user to a room
 #'
@@ -189,11 +178,8 @@ mx_room_topic <- function(session, room_id) {
 #' }
 #' @export
 mx_room_invite <- function(session, room_id, user_id) {
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/invite",
-                    mx_encode_id(room_id)
-    )
-    mx_http(session$server, "POST", path,
-            body = list(user_id = user_id), token = session$token)
+    path <- sprintf("/_matrix/client/v3/rooms/%s/invite", mx_encode_id(room_id))
+    mx_http(session$server, "POST", path, body = list(user_id = user_id),
+            token = session$token)
     invisible(TRUE)
 }

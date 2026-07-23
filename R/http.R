@@ -28,10 +28,8 @@ mx_http <- function(base_url, method, path, body = NULL, query = NULL,
     resp <- curl::curl_fetch_memory(url, handle = h)
     raw <- rawToChar(resp$content)
     parsed <- if (nzchar(raw)) {
-        tryCatch(
-                 jsonlite::fromJSON(raw, simplifyVector = FALSE),
-                 error = function(e) list(raw = raw)
-        )
+        tryCatch(jsonlite::fromJSON(raw, simplifyVector = FALSE),
+                 error = function(e) list(raw = raw))
     } else {
         list()
     }
@@ -53,16 +51,15 @@ mx_http <- function(base_url, method, path, body = NULL, query = NULL,
 # carry the structured details.
 mx_raise <- function(errcode, msg, status = NULL, body = NULL) {
     cond <- structure(
-                      class = c(paste0("mx_error_", errcode), "mx_error",
-                                "error", "condition"),
+                      class = c(paste0("mx_error_", errcode), "mx_error", "error",
+                                "condition"),
                       list(
-                           message = sprintf("Matrix error [%s]: %s",
-                                             errcode, msg),
+                           message = sprintf("Matrix error [%s]: %s", errcode, msg),
                            call = NULL,
                            errcode = errcode,
                            status = status,
                            body = body
-                      )
+        )
     )
     stop(cond)
 }
@@ -77,4 +74,3 @@ mx_txn_id <- function() {
 mx_encode_id <- function(x) utils::URLencode(x, reserved = TRUE)
 
 mx_empty_body <- function() stats::setNames(list(), character())
-
