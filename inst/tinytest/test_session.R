@@ -31,3 +31,24 @@ if (at_home() && nzchar(Sys.getenv("MX_TEST_SERVER"))) {
   expect_equal(wid$user_id, s$user_id)
   mx.api::mx_logout(s)
 }
+
+# --- print.mx_session masks the access token ---
+
+sess <- mx.api::mx_session("https://matrix.example", "syt_supersecret",
+                           "@alice:matrix.example", "ABC123")
+out <- paste(capture.output(print(sess)), collapse = "\n")
+expect_false(grepl("syt_supersecret", out, fixed = TRUE))
+expect_true(grepl("token:\\s+<hidden>", out))
+# everything else stays readable
+expect_true(grepl("@alice:matrix.example", out, fixed = TRUE))
+expect_true(grepl("ABC123", out, fixed = TRUE))
+expect_true(grepl("https://matrix.example", out, fixed = TRUE))
+# an empty token reads as unset, so "is my token loaded?" stays answerable
+empty <- mx.api::mx_session("https://matrix.example", "",
+                            "@alice:matrix.example", "ABC123")
+expect_true(grepl("token:\\s+<unset>", paste(capture.output(print(empty)),
+                                             collapse = "\n")))
+# returns the session unchanged, and invisibly
+capture.output(vis <- withVisible(print(sess)))
+expect_false(vis$visible)
+expect_identical(vis$value, sess)

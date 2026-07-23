@@ -44,3 +44,5 @@ export(mx_sync)
 export(mx_typing)
 export(mx_upload)
 export(mx_whoami)
+
+S3method(print,mx_session)
