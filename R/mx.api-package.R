@@ -8,4 +8,3 @@
 #' @name mx.api-package
 #' @aliases mx.api
 "_PACKAGE"
-

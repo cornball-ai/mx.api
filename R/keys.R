@@ -166,4 +166,3 @@ mx_send_to_device <- function(session, event_type, messages, txn_id = NULL) {
             body = list(messages = messages), token = session$token)
     invisible(NULL)
 }
-

@@ -21,10 +21,8 @@ mx_send <- function(session, room_id, body, msgtype = "m.text", extra = NULL) {
         content <- utils::modifyList(content, extra)
     }
 
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/send/m.room.message/%s",
-                    mx_encode_id(room_id), mx_encode_id(mx_txn_id())
-    )
+    path <- sprintf("/_matrix/client/v3/rooms/%s/send/m.room.message/%s",
+                    mx_encode_id(room_id), mx_encode_id(mx_txn_id()))
     resp <- mx_http(
                     session$server, "PUT", path,
                     body = content, token = session$token
@@ -55,11 +53,9 @@ mx_send_event <- function(session, room_id, event_type, content,
     if (is.null(txn_id)) {
         txn_id <- mx_txn_id()
     }
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/send/%s/%s",
+    path <- sprintf("/_matrix/client/v3/rooms/%s/send/%s/%s",
                     mx_encode_id(room_id), mx_encode_id(event_type),
-                    mx_encode_id(txn_id)
-    )
+                    mx_encode_id(txn_id))
     resp <- mx_http(
                     session$server, "PUT", path,
                     body = content, token = session$token
@@ -87,11 +83,9 @@ mx_send_event <- function(session, room_id, event_type, content,
 #' @export
 mx_set_state <- function(session, room_id, event_type, content,
                          state_key = "") {
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/state/%s/%s",
+    path <- sprintf("/_matrix/client/v3/rooms/%s/state/%s/%s",
                     mx_encode_id(room_id), mx_encode_id(event_type),
-                    mx_encode_id(state_key)
-    )
+                    mx_encode_id(state_key))
     resp <- mx_http(
                     session$server, "PUT", path,
                     body = content, token = session$token
@@ -118,11 +112,9 @@ mx_set_state <- function(session, room_id, event_type, content,
 #' }
 #' @export
 mx_get_state <- function(session, room_id, event_type, state_key = "") {
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/state/%s/%s",
+    path <- sprintf("/_matrix/client/v3/rooms/%s/state/%s/%s",
                     mx_encode_id(room_id), mx_encode_id(event_type),
-                    mx_encode_id(state_key)
-    )
+                    mx_encode_id(state_key))
     tryCatch(
              mx_http(session$server, "GET", path, token = session$token),
              mx_error_M_NOT_FOUND = function(e) NULL
@@ -152,10 +144,8 @@ mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
         query$from <- from
     }
 
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/messages",
-                    mx_encode_id(room_id)
-    )
+    path <- sprintf("/_matrix/client/v3/rooms/%s/messages",
+                    mx_encode_id(room_id))
     mx_http(session$server, "GET", path, query = query, token = session$token)
 }
 
@@ -180,12 +170,9 @@ mx_messages <- function(session, room_id, from = NULL, dir = "b", limit = 50L) {
 mx_read_receipt <- function(session, room_id, event_id,
                             receipt_type = c("m.read", "m.read.private")) {
     receipt_type <- match.arg(receipt_type)
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/receipt/%s/%s",
-                    mx_encode_id(room_id),
-                    mx_encode_id(receipt_type),
-                    mx_encode_id(event_id)
-    )
+    path <- sprintf("/_matrix/client/v3/rooms/%s/receipt/%s/%s",
+                    mx_encode_id(room_id), mx_encode_id(receipt_type),
+                    mx_encode_id(event_id))
     mx_http(
             session$server, "POST", path,
             body = mx_empty_body(), token = session$token
@@ -212,11 +199,8 @@ mx_read_receipt <- function(session, room_id, event_id,
 #' @export
 mx_react <- function(session, room_id, event_id, key) {
     content <- list(
-                    `m.relates_to` = list(
-            rel_type = "m.annotation",
-            event_id = event_id,
-            key = key
-        )
+                    `m.relates_to` = list(rel_type = "m.annotation", event_id = event_id,
+            key = key)
     )
     path <- sprintf(
                     "/_matrix/client/v3/rooms/%s/send/m.reaction/%s",
@@ -257,12 +241,9 @@ mx_sync <- function(session, since = NULL, timeout = 0L, filter = NULL) {
         query$filter <- filter
     }
 
-    mx_http(
-            session$server, "GET", "/_matrix/client/v3/sync",
-            query = query, token = session$token
-    )
+    mx_http(session$server, "GET", "/_matrix/client/v3/sync", query = query,
+            token = session$token)
 }
-
 
 #' Redact an event
 #'
@@ -290,11 +271,9 @@ mx_redact <- function(session, room_id, event_id, reason = NULL,
     } else {
         list(reason = reason)
     }
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/redact/%s/%s",
+    path <- sprintf("/_matrix/client/v3/rooms/%s/redact/%s/%s",
                     mx_encode_id(room_id), mx_encode_id(event_id),
-                    mx_encode_id(txn_id)
-    )
+                    mx_encode_id(txn_id))
     resp <- mx_http(session$server, "PUT", path, body = body,
                     token = session$token)
     resp$event_id
@@ -323,11 +302,8 @@ mx_typing <- function(session, room_id, typing = TRUE, timeout = 30000L) {
     if (isTRUE(typing)) {
         body$timeout <- as.integer(timeout)
     }
-    path <- sprintf(
-                    "/_matrix/client/v3/rooms/%s/typing/%s",
-                    mx_encode_id(room_id), mx_encode_id(session$user_id)
-    )
-    mx_http(session$server, "PUT", path, body = body,
-            token = session$token)
+    path <- sprintf("/_matrix/client/v3/rooms/%s/typing/%s",
+                    mx_encode_id(room_id), mx_encode_id(session$user_id))
+    mx_http(session$server, "PUT", path, body = body, token = session$token)
     invisible(TRUE)
 }
