@@ -7,20 +7,51 @@
 \alias{mx_send_video}
 \title{Send a media file to a room}
 \usage{
-mx_send_media(session, room_id, path, body = basename(path), msgtype = NULL,
-              content_type = NULL, info = list())
+mx_send_media(
+  session,
+  room_id,
+  path,
+  body = basename(path),
+  msgtype = NULL,
+  content_type = NULL,
+  info = list()
+)
 
-mx_send_file(session, room_id, path, body = basename(path),
-             content_type = NULL, info = list())
+mx_send_file(
+  session,
+  room_id,
+  path,
+  body = basename(path),
+  content_type = NULL,
+  info = list()
+)
 
-mx_send_image(session, room_id, path, body = basename(path),
-              content_type = NULL, info = list())
+mx_send_image(
+  session,
+  room_id,
+  path,
+  body = basename(path),
+  content_type = NULL,
+  info = list()
+)
 
-mx_send_audio(session, room_id, path, body = basename(path),
-              content_type = NULL, info = list())
+mx_send_audio(
+  session,
+  room_id,
+  path,
+  body = basename(path),
+  content_type = NULL,
+  info = list()
+)
 
-mx_send_video(session, room_id, path, body = basename(path),
-              content_type = NULL, info = list())
+mx_send_video(
+  session,
+  room_id,
+  path,
+  body = basename(path),
+  content_type = NULL,
+  info = list()
+)
 }
 \arguments{
 \item{session}{An "mx_session" object.}

@@ -3,8 +3,12 @@
 \alias{mx_keys_upload}
 \title{Upload device identity and one-time keys}
 \usage{
-mx_keys_upload(session, device_keys = NULL, one_time_keys = NULL,
-               fallback_keys = NULL)
+mx_keys_upload(
+  session,
+  device_keys = NULL,
+  one_time_keys = NULL,
+  fallback_keys = NULL
+)
 }
 \arguments{
 \item{session}{An \code{mx_session}.}
