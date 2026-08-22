@@ -27,16 +27,26 @@ mx_rooms <- function(session) {
 #' @param preset Character or NULL. A Matrix room preset
 #'   ("private_chat", "trusted_private_chat", "public_chat").
 #' @param invite Character vector. Matrix IDs to invite.
+#' @param creation_content Named list or NULL. Merged into the
+#'   \code{m.room.create} event content. This is the only way to set
+#'   properties that are fixed at creation and immutable afterwards --
+#'   notably \code{type = "m.space"}, which makes the room a space rather
+#'   than a conversation. A space cannot be converted from an ordinary
+#'   room later, so it has to be requested here or not at all.
 #'
 #' @return The new room ID as a character string.
 #' @examples
 #' \dontrun{
 #' room_id <- mx_room_create(s, name = "test", topic = "hello")
+#'
+#' # A space, which holds other rooms instead of messages
+#' space_id <- mx_room_create(s, name = "Topics",
+#'                            creation_content = list(type = "m.space"))
 #' }
 #' @export
 mx_room_create <- function(session, name = NULL, topic = NULL,
                            visibility = "private", preset = NULL,
-                           invite = character()) {
+                           invite = character(), creation_content = NULL) {
     body <- list(visibility = visibility)
     if (!is.null(name)) {
         body$name <- name
@@ -49,6 +59,17 @@ mx_room_create <- function(session, name = NULL, topic = NULL,
     }
     if (length(invite)) {
         body$invite <- as.list(invite)
+    }
+    if (length(creation_content)) {
+        if (!is.list(creation_content) ||
+            is.null(names(creation_content)) ||
+            !all(nzchar(names(creation_content)))) {
+            stop("creation_content must be a fully named list", call. = FALSE)
+        }
+        # Sent as an object even with one entry: unnamed or auto-unboxed
+        # here would serialize to a bare string and the server would
+        # reject the create rather than quietly making a normal room.
+        body$creation_content <- creation_content
     }
 
     resp <- mx_http(

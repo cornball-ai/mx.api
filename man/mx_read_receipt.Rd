@@ -3,8 +3,12 @@
 \alias{mx_read_receipt}
 \title{Send a read receipt for a room event}
 \usage{
-mx_read_receipt(session, room_id, event_id,
-                receipt_type = c("m.read", "m.read.private"))
+mx_read_receipt(
+  session,
+  room_id,
+  event_id,
+  receipt_type = c("m.read", "m.read.private")
+)
 }
 \arguments{
 \item{session}{An "mx_session" object.}

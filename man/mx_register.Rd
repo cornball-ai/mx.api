@@ -3,8 +3,14 @@
 \alias{mx_register}
 \title{Register a new account on a Matrix homeserver}
 \usage{
-mx_register(server, username, password, device_id = NULL,
-            initial_device_display_name = NULL, inhibit_login = FALSE)
+mx_register(
+  server,
+  username,
+  password,
+  device_id = NULL,
+  initial_device_display_name = NULL,
+  inhibit_login = FALSE
+)
 }
 \arguments{
 \item{server}{Character. Homeserver base URL.}

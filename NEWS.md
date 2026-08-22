@@ -1,3 +1,11 @@
+# mx.api 0.3.0.1
+
+* `mx_room_create()` gains `creation_content`, merged into the
+  `m.room.create` event. This is the only way to set properties fixed at
+  creation and immutable afterwards -- notably `type = "m.space"`, which
+  makes the room a space. A space cannot be converted from an ordinary
+  room later, so it has to be requested at creation or not at all.
+
 # mx.api 0.3.0
 
 * Generic room-event and state plumbing: `mx_send_event()` sends any
