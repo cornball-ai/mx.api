@@ -167,3 +167,78 @@ mx_send_to_device <- function(session, event_type, messages, txn_id = NULL) {
     invisible(NULL)
 }
 
+
+#' Upload cross-signing public keys
+#'
+#' POST \code{/_matrix/client/v3/keys/device_signing/upload}. The key
+#' objects must already carry the signatures required by the Matrix
+#' cross-signing specification. Homeservers normally require user-interactive
+#' authentication (UIA); the initial 401 response contains a session id which
+#' the caller supplies in a completed \code{auth} object on retry.
+#'
+#' @param session An \code{mx_session}.
+#' @param master_key A signed Matrix CrossSigningKey object or NULL.
+#' @param self_signing_key A CrossSigningKey signed by the master key, or NULL.
+#' @param user_signing_key A CrossSigningKey signed by the master key, or NULL.
+#' @param auth Completed UIA authentication object or NULL.
+#' @return Parsed homeserver response.
+#' @examples
+#' \dontrun{
+#' mx_keys_device_signing_upload(s, master_key = master,
+#'     self_signing_key = self, user_signing_key = user,
+#'     auth = list(type = "m.login.password", session = uia_session,
+#'                 identifier = list(type = "m.id.user", user = "bot"),
+#'                 password = "secret"))
+#' }
+#' @export
+mx_keys_device_signing_upload <- function(session, master_key = NULL,
+                                          self_signing_key = NULL,
+                                          user_signing_key = NULL,
+                                          auth = NULL) {
+    body <- list()
+    if (!is.null(master_key)) {
+        body$master_key <- master_key
+    }
+    if (!is.null(self_signing_key)) {
+        body$self_signing_key <- self_signing_key
+    }
+    if (!is.null(user_signing_key)) {
+        body$user_signing_key <- user_signing_key
+    }
+    if (!is.null(auth)) {
+        body$auth <- auth
+    }
+    if (!length(body) || (length(body) == 1L && !is.null(body$auth))) {
+        stop("mx_keys_device_signing_upload: no signing keys supplied",
+             call. = FALSE)
+    }
+    mx_http(session$server, "POST",
+            "/_matrix/client/v3/keys/device_signing/upload",
+            body = body, token = session$token)
+}
+
+#' Upload signatures over device or cross-signing keys
+#'
+#' POST \code{/_matrix/client/v3/keys/signatures/upload}. The body maps a
+#' user id to key ids and the complete signed key objects. mx.api transports
+#' the objects unchanged and performs no signature validation itself.
+#'
+#' @param session An \code{mx_session}.
+#' @param signatures Named list mapping user ids to signed key objects.
+#' @return Parsed response, including any per-signature \code{failures}.
+#' @examples
+#' \dontrun{
+#' mx_keys_signatures_upload(s, list(
+#'     "@bot:example.org" = list(DEVICE = signed_device)))
+#' }
+#' @export
+mx_keys_signatures_upload <- function(session, signatures) {
+    if (!is.list(signatures) || is.null(names(signatures)) ||
+        !length(signatures)) {
+        stop("mx_keys_signatures_upload: 'signatures' must be a non-empty named list",
+             call. = FALSE)
+    }
+    mx_http(session$server, "POST",
+            "/_matrix/client/v3/keys/signatures/upload",
+            body = signatures, token = session$token)
+}
