@@ -1,3 +1,10 @@
+# mx.api 0.3.0.2
+
+* New: `mx_keys_device_signing_upload()` publishes Matrix master,
+  self-signing, and user-signing keys with explicit UIA passthrough.
+* New: `mx_keys_signatures_upload()` publishes signatures over device and
+  cross-signing key objects.
+
 # mx.api 0.3.0.1
 
 * `mx_room_create()` gains `creation_content`, merged into the
