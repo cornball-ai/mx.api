@@ -1,3 +1,8 @@
+# mx.api 0.3.1
+
+* Patch release collecting the room-creation and cross-signing transport
+  additions from 0.3.0.1 and 0.3.0.2 below. No code changes since 0.3.0.2.
+
 # mx.api 0.3.0.2
 
 * New: `mx_keys_device_signing_upload()` publishes Matrix master,
