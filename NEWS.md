@@ -1,3 +1,12 @@
+# mx.api 0.3.1.1
+
+* New: the endpoints a MatrixRTC client needs. `mx_openid_token()`
+  requests an OpenID token, `mx_rtc_transports()` reads the MSC4143
+  transport list, `mx_rtc_livekit_token()` exchanges the OpenID token at
+  a LiveKit JWT service for a media token, `mx_room_state()` returns a
+  room's full current state, and `mx_well_known_client()` reads a
+  server's client well-known file.
+
 # mx.api 0.3.1
 
 * Patch release collecting the room-creation and cross-signing transport
