@@ -71,6 +71,40 @@ local({
                "M_FORBIDDEN")
 })
 
+# LiveKit token exchange: POST /sfu/get at the service, body as the
+# Element and FluffyChat clients send it, no Matrix token attached
+local({
+  seen <- NULL
+  openid <- list(access_token = "oid", token_type = "Bearer",
+                 matrix_server_name = "example", expires_in = 3600L)
+  out <- with_http(function(base_url, method, path, body = NULL,
+                            query = NULL, token = NULL) {
+    seen <<- list(base_url = base_url, method = method, path = path,
+                  body = body, token = token)
+    list(url = "wss://sfu.example", jwt = "eyJ.x.y")
+  }, mx.api::mx_rtc_livekit_token("https://jwt.example/", "!abc:example",
+                                  openid, "DEV"))
+  expect_identical(out, list(url = "wss://sfu.example", jwt = "eyJ.x.y"))
+  expect_identical(seen$base_url, "https://jwt.example")
+  expect_identical(seen$method, "POST")
+  expect_identical(seen$path, "/sfu/get")
+  expect_null(seen$token)
+  expect_identical(seen$body,
+                   list(room = "!abc:example", openid_token = openid,
+                        device_id = "DEV"))
+  expect_error(with_http(function(...) list(error = "nope"),
+                         mx.api::mx_rtc_livekit_token("https://jwt.example",
+                                                      "!abc:example", openid,
+                                                      "DEV")),
+               "did not return url and jwt")
+  denied <- function(...) {
+    mx.api:::mx_raise("M_UNAUTHORIZED", "The request could not be authorised.",
+                      status = 401L)
+  }
+  expect_error(with_http(denied, mx.api::mx_rtc_livekit_token(
+    "https://jwt.example", "!abc:example", openid, "DEV")), "M_UNAUTHORIZED")
+})
+
 # Full room state: GET on the room, events returned as a list
 local({
   seen <- NULL

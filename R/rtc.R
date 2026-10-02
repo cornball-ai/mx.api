@@ -52,6 +52,41 @@ mx_rtc_transports <- function(session) {
     resp$rtc_transports %||% list()
 }
 
+#' Exchange an OpenID token for a LiveKit media token
+#'
+#' Calls a LiveKit JWT service (\code{lk-jwt-service}) the way Element
+#' Call and FluffyChat do: \code{POST <service_url>/sfu/get} with the
+#' Matrix room, this user's OpenID token and device id. The service
+#' verifies the token with the homeserver and answers with the SFU's
+#' WebSocket URL and a room-scoped JWT whose LiveKit identity is
+#' \code{"<user_id>:<device_id>"}.
+#'
+#' @param service_url Character. Base URL of the JWT service, from
+#'   \code{\link{mx_rtc_transports}} or a call member's
+#'   \code{foci_preferred}.
+#' @param room_id Character. The Matrix room of the call.
+#' @param openid_token The list returned by \code{\link{mx_openid_token}}.
+#' @param device_id Character. This device's id.
+#' @return A list with \code{url} (the LiveKit server) and \code{jwt}.
+#' @examples
+#' \dontrun{
+#' tok <- mx_rtc_livekit_token("https://jwt.example", "!abc:example",
+#'                             mx_openid_token(s), s$device_id)
+#' tok$url
+#' }
+#' @export
+mx_rtc_livekit_token <- function(service_url, room_id, openid_token,
+                                 device_id) {
+    resp <- mx_http(sub("/+$", "", service_url), "POST", "/sfu/get",
+                    body = list(room = room_id, openid_token = openid_token,
+                                device_id = device_id))
+    if (!is.character(resp$url) || !is.character(resp$jwt)) {
+        stop("the LiveKit JWT service at ", service_url,
+             " did not return url and jwt", call. = FALSE)
+    }
+    list(url = resp$url, jwt = resp$jwt)
+}
+
 #' Get the full current state of a room
 #'
 #' Returns every current state event of a room, one list per event with
