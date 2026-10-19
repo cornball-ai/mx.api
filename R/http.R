@@ -12,7 +12,7 @@ mx_http <- function(base_url, method, path, body = NULL, query = NULL,
         url <- paste0(url, "?", paste(pairs, collapse = "&"))
     }
 
-    h <- curl::new_handle()
+    h <- mx_http_handle(wait = mx_server_wait(path, body, query))
     curl::handle_setopt(h, customrequest = method)
     headers <- c(Accept = "application/json")
     if (!is.null(token)) {

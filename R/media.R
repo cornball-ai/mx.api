@@ -38,7 +38,7 @@ mx_upload <- function(session, path, content_type = NULL, filename = NULL) {
     con <- file(path, "rb")
     on.exit(close(con), add = TRUE)
 
-    h <- curl::new_handle()
+    h <- mx_http_handle(media = TRUE)
     curl::handle_setopt(
                         h,
                         upload = TRUE,
@@ -98,7 +98,7 @@ mx_download <- function(session, mxc_url, dest) {
                   utils::URLencode(media_id, reserved = TRUE)
     )
 
-    h <- curl::new_handle()
+    h <- mx_http_handle(media = TRUE)
     curl::handle_setheaders(h, Authorization = paste("Bearer", session$token))
     curl::curl_download(url, dest, handle = h)
     invisible(dest)
