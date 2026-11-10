@@ -40,10 +40,5 @@ runnable examples.
 
 Four on CRAN: mx.client 0.2.1 and chat.api 0.1.0 import this package;
 mx.crypto 0.2.2 and corteza 0.7.1 suggest it. I checked the CRAN source
-of each against this version with `R CMD check`.
-
-* mx.client, chat.api, and mx.crypto finish with Status: OK.
-* corteza reports 1 failed assertion of 2563, a default-model check in
-  `test_cli_helpers.R`. The same assertion fails identically against
-  mx.api 0.3.1 on this machine, which carries a development build of
-  another dependency, so the failure does not come from this update.
+of each against this version with `R CMD check`; all four finish with
+Status: OK.
