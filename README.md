@@ -38,6 +38,26 @@ str(batch$rooms$join)
 mx_logout(s)
 ```
 
+## Network deadlines
+
+Requests allow 10 seconds to connect and 60 seconds in total. Sync and
+federated key lookups add their requested server-side wait to the total;
+a 30-second sync therefore has a 90-second deadline. Uploads and downloads
+allow 300 seconds in total. These limits also cover stalled connections.
+
+Set finite positive limits in seconds when a deployment needs different ones:
+
+```r
+options(mx.api.connect_timeout = 10,
+        mx.api.request_timeout = 60,
+        mx.api.media_timeout = 300)
+```
+
+Timeouts return a curl error so a bot's polling loop can retry. The transport
+does not replay requests automatically: a timed-out write may already have
+succeeded on the server. Failed downloads may leave a partial destination file.
+These limits apply to Matrix traffic, not model generation.
+
 ## Create a private room with invites
 
 ```r
