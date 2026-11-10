@@ -4,34 +4,29 @@
 
 ## Test environments
 
-* local Ubuntu 24.04, R 4.6.0
-* local Windows 10: R 4.6.0 and R-devel (4.7.0 pre-release), both OK;
-  R 4.5.1 with 1 environmental NOTE ("unable to verify current time")
+* local Ubuntu 24.04, R 4.6.1, `R CMD check --as-cran --run-donttest`
 * GitHub Actions (ubuntu-latest, macos-latest) via r-ci
 
-## What's new in 0.3.0
+## What's new in 0.4.0
 
-Additive only; no changes to the existing 0.2.0 surface.
+This is an update to 0.3.1. It is additive only: no exported function
+was removed or renamed, and no exported signature changed.
 
-* Generic room-event and state plumbing: `mx_send_event()`,
-  `mx_set_state()`, `mx_get_state()` (what an external
-  end-to-end-encryption layer needs to send `m.room.encrypted` events
-  and read `m.room.encryption` state).
-* Media messages: `mx_send_media()` uploads a file and posts the
-  referencing message, deriving the msgtype from the MIME type;
-  `mx_send_file()` / `mx_send_image()` / `mx_send_audio()` /
-  `mx_send_video()` fix it explicitly. `mx_guess_mime()` is exported;
-  `mx_media_config()` reports the server's upload cap. `mx_upload()`
-  now streams from disk instead of reading files into memory.
-* Bot lifecycle endpoints: `mx_room_invite()`, `mx_redact()`,
-  `mx_typing()`, `mx_profile()`, `mx_set_displayname()`,
-  `mx_set_avatar_url()`.
-* Account data: `mx_get_account_data()` / `mx_set_account_data()`.
-* Devices: `mx_devices()`, `mx_delete_device()` (user-interactive auth
-  payloads pass through verbatim).
-* HTTP failures now signal classed conditions (`mx_error_<ERRCODE>`)
-  carrying the Matrix errcode, HTTP status, and parsed body; message
-  text is unchanged from previous releases.
+* New endpoints for 'MatrixRTC' clients: `mx_openid_token()`,
+  `mx_rtc_transports()`, `mx_rtc_livekit_token()`, `mx_room_state()`,
+  and `mx_well_known_client()`.
+* HTTP requests now carry finite deadlines, so a stalled connection
+  cannot hold a polling loop indefinitely. Three options set them, in
+  seconds: `mx.api.connect_timeout` (default 10),
+  `mx.api.request_timeout` (default 60), and `mx.api.media_timeout`
+  (default 300). Long-poll requests add their server-side wait to the
+  deadline.
+
+## Notes on tests
+
+The timeout tests listen on the loopback interface and connect to that
+listener from the test process. They contact no external host and need
+no credentials. They run on Unix-alikes and skip elsewhere.
 
 ## Notes on examples
 
@@ -41,6 +36,14 @@ cannot execute under `R CMD check --as-cran`. Pure functions
 (`mx_session()`, `mx_canonical_json()`, `mx_guess_mime()`) have
 runnable examples.
 
-## Downstream dependencies
+## Reverse dependencies
 
-None on CRAN.
+Four on CRAN: mx.client 0.2.1 and chat.api 0.1.0 import this package;
+mx.crypto 0.2.2 and corteza 0.7.1 suggest it. I checked the CRAN source
+of each against this version with `R CMD check`.
+
+* mx.client, chat.api, and mx.crypto finish with Status: OK.
+* corteza reports 1 failed assertion of 2563, a default-model check in
+  `test_cli_helpers.R`. The same assertion fails identically against
+  mx.api 0.3.1 on this machine, which carries a development build of
+  another dependency, so the failure does not come from this update.
