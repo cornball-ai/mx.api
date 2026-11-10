@@ -1,3 +1,8 @@
+# mx.api 0.4.0
+
+* Minor release collecting the MatrixRTC endpoints and the HTTP request
+  deadlines from 0.3.1.1 and 0.3.1.2 below. No code changes since 0.3.1.2.
+
 # mx.api 0.3.1.2
 
 * Bound HTTP requests so a stalled connection cannot hold a polling loop
